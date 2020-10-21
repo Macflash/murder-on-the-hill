@@ -19,3 +19,16 @@ export function MoveCoord(c: Coord, direction: Direction): Coord {
       return { x: x - 1, y };
   }
 }
+
+// Distances ordered by their stupidness
+export function Distance(a: Coord, b:Coord) {
+  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+}
+
+export function HammingDistance(a: Coord, b:Coord) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+export function EitherDirectionDistance(a: Coord, b:Coord) {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}

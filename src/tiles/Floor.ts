@@ -3,18 +3,20 @@ import { Direction, AllDirections, Opposite } from './Direction';
 import { Tile } from './Tile';
 import { TileLibrary, FourWay } from './RegisterTiles';
 
+export function IndexCoord(c: Coord) { return Index(c.x, c.y); }
+export function Index(x: number, y: number) { return `${x}, ${y}`; }
+
 export class Floor {
   constructor(public readonly name: string) { }
 
   private grid = new Map<string, Tile>();
 
-  private index(x: number, y: number) { return `${x}, ${y}`; }
 
   getCoord(c: Coord): Tile | undefined { return this.getTile(c.x, c.y); }
-  getTile(x: number, y: number): Tile | undefined { return this.grid.get(this.index(x, y)); }
+  getTile(x: number, y: number): Tile | undefined { return this.grid.get(Index(x, y)); }
 
   hasCoord(c: Coord): boolean { return this.hasTile(c.x, c.y); }
-  hasTile(x: number, y: number): boolean { return this.grid.has(this.index(x, y)); }
+  hasTile(x: number, y: number): boolean { return this.grid.has(Index(x, y)); }
 
   setCoord(tile: Tile, c: Coord) { this.setTile(tile, c.x, c.y); }
   setTile(tile: Tile, x: number, y: number) {
@@ -25,7 +27,7 @@ export class Floor {
 
     tile.x = x;
     tile.y = y;
-    this.grid.set(this.index(x, y), tile);
+    this.grid.set(Index(x, y), tile);
   }
 
   get tiles(): Tile[] {

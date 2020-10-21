@@ -2,9 +2,8 @@ import React from 'react';
 import './App.css';
 import { GridTile } from './GridTile';
 import { CollidePlayerWithWalls, Item } from './tiles/Collision';
-import { FirstFloor } from './tiles/Floor';
+import { FirstFloor, Index } from './tiles/Floor';
 
-export const tileSize = 200;
 export let centerX = 0;
 export let centerY = 0;
 
@@ -42,7 +41,6 @@ function App() {
   React.useEffect(() => { RenderApp = rerender; }, [rerender]);
   return (
     <div className="App" style={{ overflow: "hidden" }}>
-
       {/*
       <div style={{ zIndex: 100, bottom: 0, padding: 20, position: "absolute", left: 0, right: 0 }}>
         <button onClick={() => { centerY -= 100; rerender(); }}>UP!</button>
@@ -55,7 +53,11 @@ function App() {
       <Player />
 
       <div id="gamefloor">
-        {FirstFloor.tiles.map((p, i) => <GridTile floor={FirstFloor} tile={p} key={i} />)}
+        {FirstFloor.tiles.map((tile) => <GridTile
+          floor={FirstFloor}
+          tile={tile}
+          key={Index(tile.x, tile.y)}
+        />)}
       </div>
 
     </div>
@@ -69,19 +71,19 @@ let downPressed = false;
 
 document.addEventListener('keydown', e => {
   //console.log(e.key);
-  if (e.key == "a" || e.key == "ArrowLeft") {
+  if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
     leftPressed = true;
     rightPressed = false;
   }
-  if (e.key == "d" || e.key == "ArrowRight") {
+  if (e.key == "d" ||e.key == "D" || e.key == "ArrowRight") {
     rightPressed = true;
     leftPressed = false;
   }
-  if (e.key == "w" || e.key == "ArrowUp") {
+  if (e.key == "w" ||e.key == "W" || e.key == "ArrowUp") {
     upPressed = true;
     downPressed = false;
   }
-  if (e.key == "s" || e.key == "ArrowDown") {
+  if (e.key == "s" ||e.key == "S" || e.key == "ArrowDown") {
     downPressed = true;
     upPressed = false;
   }
@@ -89,16 +91,16 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('keyup', e => {
   //console.log(e.key);
-  if (e.key == "a" || e.key == "ArrowLeft") {
+  if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
     leftPressed = false;
   }
-  if (e.key == "d" || e.key == "ArrowRight") {
+  if (e.key == "d" ||e.key == "D" || e.key == "ArrowRight") {
     rightPressed = false;
   }
-  if (e.key == "w" || e.key == "ArrowUp") {
+  if (e.key == "w" ||e.key == "W" || e.key == "ArrowUp") {
     upPressed = false;
   }
-  if (e.key == "s" || e.key == "ArrowDown") {
+  if (e.key == "s" ||e.key == "S" || e.key == "ArrowDown") {
     downPressed = false;
   }
 });

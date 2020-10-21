@@ -1,17 +1,37 @@
 import React from 'react';
-import { MoveCoord } from './tiles/Coord';
+import { EitherDirectionDistance, HammingDistance, MoveCoord } from './tiles/Coord';
 import { Direction, AllDirections } from './tiles/Direction';
 import { Tile } from './tiles/Tile';
-import { tileSize, centerY, centerX, RenderApp } from './App';
+import { centerY, centerX, RenderApp } from './App';
 import { Floor } from "./tiles/Floor";
+import { GetTileCoord } from './tiles/Collision';
+import { tileSize } from './tiles/Size';
 
 export const wallSize = 10;
 export const doorSize = 48;
 
+// probably only update this on resize
+var screenSize = Math.max(window.innerWidth, window.innerHeight);
+var tileViewDist = Math.ceil(screenSize / (2 * tileSize));
+
+window.addEventListener('resize', ()=>{
+  screenSize = Math.max(window.innerWidth, window.innerHeight);
+  tileViewDist = Math.ceil(screenSize / (2 * tileSize));
+  console.log("Updated view dist", tileViewDist);
+});
+
+console.log("Initial view dist", tileViewDist);
+
 export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
   const { tile, floor } = props;
 
-  // todo draw stuff for each EDGE!
+  // check screen space if we should render it!
+  const tileCoord = { x: tile.x, y: tile.y };
+  const cameraCoord = GetTileCoord({ x: centerX, y: centerY });
+  if (EitherDirectionDistance(tileCoord, cameraCoord) > tileViewDist) {
+    return null;
+  }
+
   return <div
     style={{
       position: "absolute",
@@ -81,7 +101,6 @@ export const GridWall: React.FC<{ tile: Tile; floor: Floor; direction: Direction
       flexDirection: row ? "row" : "column",
       justifyContent: "center",
       alignItems: "center",
-      //backgroundColor: "black",
       overflow: "hidden",
     }}>
     {filler}
@@ -89,10 +108,7 @@ export const GridWall: React.FC<{ tile: Tile; floor: Floor; direction: Direction
       <div
         style={{ cursor: opened ? undefined : "pointer", height: doorSize, width: doorSize, backgroundColor: opened ? "" : "grey" }}
         onClick={opened ? undefined : () => {
-          // TODO: add a NEW tile that like.. matches the constraints!
-          // for now... FOURWAY!  
           floor.fillCoord(MoveCoord(tile.coord, direction));
-          //floor.setCoord(FourWay.create(), Offset(tile.coord, direction));
           RenderApp();
         }}
       >

@@ -2,12 +2,11 @@
 // ok how can we do... intersections and interactions?
 // #1 only can hit things in your room (or very rarely a neighboring room that is close by..)
 
-import { tileSize } from "../App";
 import { doorSize, wallSize } from "../GridTile";
 import { Coord, MoveCoord } from "./Coord";
 import { Direction } from "./Direction";
 import { Floor } from "./Floor";
-import { Tile } from "./Tile";
+import { tileSize } from "./Size";
 
 export interface Item {
     position: Coord,
@@ -30,6 +29,21 @@ export function AddItem(item: Item) {
     items.push(item);
 }
 
+/** The TILE the item is in. */
+export function GetTileCoord(c: Coord): Coord {
+    const hT = .5 * tileSize;
+    const x = Math.floor((c.x + hT) / tileSize);
+    const y = Math.floor((c.y + hT) / tileSize);
+    return { x, y };
+}
+
+/** The relative place in the current TILE the item is in. */
+export function GetRoomCoord(item: Item, tileCoord: Coord): Coord {
+    const x = item.position.x - (tileCoord.x * tileSize);
+    const y = item.position.y - (tileCoord.y * tileSize);
+    return { x, y };
+}
+
 export function CollidePlayerWithWalls(item: Item, floor?: Floor) {
     const hT = .5 * tileSize;
     const hW = .5 * item.width;
@@ -37,21 +51,15 @@ export function CollidePlayerWithWalls(item: Item, floor?: Floor) {
     const hD = .5 * doorSize;
 
     // which TILE is it in?
-    const tileX = Math.floor((item.position.x + hT) / tileSize);
-    const tileY = Math.floor((item.position.y + hT) / tileSize);
 
-
-    const roomX = item.position.x - (tileX * tileSize);
-    const roomY = item.position.y - (tileY * tileSize);
-
-    //console.log(`Tile: ${tileX},${tileY} at ${roomX},${roomY}`);
+    const tileCoord = GetTileCoord(item.position);
+    const { x: roomX, y: roomY } = GetRoomCoord(item, tileCoord);
 
     const leftWall = hW + wallSize - hT;
     const rightWall = -1 * leftWall;
     const topWall = hH + wallSize - hT;
     const bottomWall = -1 * topWall;
 
-    const tileCoord = { x: tileX, y: tileY };
     const tile = floor?.getCoord(tileCoord);
 
     //hasDoor={tile.doors.has(d)}
