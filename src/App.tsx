@@ -68,7 +68,7 @@ let rightPressed = false;
 let downPressed = false;
 
 document.addEventListener('keydown', e => {
-  console.log(e.key);
+  //console.log(e.key);
   if (e.key == "a" || e.key == "ArrowLeft") {
     leftPressed = true;
     rightPressed = false;
@@ -88,7 +88,7 @@ document.addEventListener('keydown', e => {
 });
 
 document.addEventListener('keyup', e => {
-  console.log(e.key);
+  //console.log(e.key);
   if (e.key == "a" || e.key == "ArrowLeft") {
     leftPressed = false;
   }
@@ -122,7 +122,7 @@ function animate() {
   // for now we are assuming the player is ALWAYS centered. 
   // This is probably bad and we may want to change it when we switch to a canvas based approach.
 
-  CollidePlayerWithWalls(player);
+  CollidePlayerWithWalls(player, FirstFloor);
 
   // FOLLOW CAM
   centerX = player.position.x;

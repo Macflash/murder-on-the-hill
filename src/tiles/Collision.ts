@@ -3,8 +3,11 @@
 // #1 only can hit things in your room (or very rarely a neighboring room that is close by..)
 
 import { tileSize } from "../App";
-import { wallSize } from "../GridTile";
-import { Coord } from "./Coord";
+import { doorSize, wallSize } from "../GridTile";
+import { Coord, MoveCoord } from "./Coord";
+import { Direction } from "./Direction";
+import { Floor } from "./Floor";
+import { Tile } from "./Tile";
 
 export interface Item {
     position: Coord,
@@ -27,31 +30,68 @@ export function AddItem(item: Item) {
     items.push(item);
 }
 
-export function CollidePlayerWithWalls(item: Item) {
-    const tileX = item.position.x % tileSize;
-    const tileY = item.position.y % tileSize;
-
-    console.log("Player position in Tile", tileX, tileY);
+export function CollidePlayerWithWalls(item: Item, floor?: Floor) {
     const hT = .5 * tileSize;
     const hW = .5 * item.width;
     const hH = .5 * item.height;
+    const hD = .5 * doorSize;
+
+    // which TILE is it in?
+    const tileX = Math.floor((item.position.x + hT) / tileSize);
+    const tileY = Math.floor((item.position.y + hT) / tileSize);
+
+
+    const roomX = item.position.x - (tileX * tileSize);
+    const roomY = item.position.y - (tileY * tileSize);
+
+    //console.log(`Tile: ${tileX},${tileY} at ${roomX},${roomY}`);
+
     const leftWall = hW + wallSize - hT;
-    const rightWall =  -1 * leftWall;
-    
+    const rightWall = -1 * leftWall;
     const topWall = hH + wallSize - hT;
-    const bottomWall =  -1 * topWall;
+    const bottomWall = -1 * topWall;
+
+    const tileCoord = { x: tileX, y: tileY };
+    const tile = floor?.getCoord(tileCoord);
+
+    //hasDoor={tile.doors.has(d)}
+    //opened={tile.hasNeighbor(floor, d)}
+
+    function HasRoomOrCreate(coord: Coord, direction: Direction) {
+        const hasDoor = tile && tile.doors.has(direction);
+
+        if (!hasDoor) { return false; }
+
+        const newCoord = MoveCoord(coord, direction);
+        if (!floor?.hasCoord(newCoord)) {
+            floor?.fillCoord(newCoord);
+        }
+
+        return true;
+    }
 
     // TODO: stop the item's actual move speed too.
-    if (tileX <= leftWall) {
-        item.position.x += leftWall - tileX;
+    // TODO: Stop weirdness at the EDGE of doors.
+    if (roomX <= leftWall) {
+        if (Math.abs(roomY) > hD || !HasRoomOrCreate(tileCoord, "LEFT")) {
+            item.position.x += leftWall - roomX;
+        }
     }
-    if (tileX >= rightWall) {
-        item.position.x += rightWall - tileX;
+    if (roomX >= rightWall) {
+        if (Math.abs(roomY) > hD || !HasRoomOrCreate(tileCoord, "RIGHT")) {
+            item.position.x += rightWall - roomX;
+        }
     }
-    if (tileY <= topWall) {
-        item.position.y += topWall - tileY;
+    if (roomY <= topWall) {
+        if (Math.abs(roomX) > hD || !HasRoomOrCreate(tileCoord, "TOP")) {
+            item.position.y += topWall - roomY;
+        }
     }
-    if (tileY >= bottomWall) {
-        item.position.y += bottomWall - tileY;
+    if (roomY >= bottomWall) {
+        if (Math.abs(roomX) > hD || !HasRoomOrCreate(tileCoord, "BOTTOM")) {
+            item.position.y += bottomWall - roomY;
+        }
     }
+
+    // tile
 }

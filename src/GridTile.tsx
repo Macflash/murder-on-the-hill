@@ -27,7 +27,13 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
       backgroundColor: "#663333",
     }}>
     {tile.info.name}
-    {AllDirections().map(d => <GridWall tile={tile} floor={floor} direction={d} hasDoor={tile.doors.has(d)} opened={tile.hasNeighbor(floor, d)} />)}
+    {AllDirections().map(d => <GridWall
+      tile={tile}
+      floor={floor}
+      direction={d}
+      hasDoor={tile.doors.has(d)}
+      opened={tile.hasNeighbor(floor, d)}
+    />)}
   </div>;
 }
 
@@ -65,7 +71,7 @@ function getWallPosition(direction: Direction) {
 export const GridWall: React.FC<{ tile: Tile; floor: Floor; direction: Direction; hasDoor: boolean; opened: boolean; }> = props => {
   const { direction, opened, hasDoor, tile, floor } = props;
   const row = direction == "TOP" || direction == "BOTTOM";
-  const filler = <div style={{ flex: "auto", backgroundColor: "black", height: row ? "100%" : undefined, width: row ? undefined : "100%" }}></div>;
+  const filler = <div style={{ flex: "auto", backgroundColor: "#322", height: row ? "100%" : undefined, width: row ? undefined : "100%" }}></div>;
 
   return <div
     style={{
