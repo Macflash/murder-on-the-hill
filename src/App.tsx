@@ -5,6 +5,7 @@ import { CollidePlayerWithWalls } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
 import { sightDistance, UpdateFog } from './tiles/SightLines';
 import { Player, player } from './Player';
+import { GetItems, GridItem, Item } from './tiles/Items';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -53,17 +54,27 @@ function App() {
           }} /> : null}
 
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
+          
           {FirstFloor.tiles.map((tile) => <GridTile
             overlayMode={showMap}
             floor={FirstFloor}
             tile={tile}
             key={Index(tile.x, tile.y)}
           />)}
+
+            {GetItems().map((item) => <GridItem item={item} />)}
+
         </div>
       </div>
 
     </div>
   );
+}
+
+function GetScreenSpaceCoord(item: Item){
+  return {
+    top: item
+  }
 }
 
 let leftPressed = false;

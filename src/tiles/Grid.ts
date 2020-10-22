@@ -8,7 +8,7 @@ export class Grid<T> {
   
     private grid = new Map<string, T>();
   
-    getCoord(c: Coord): T | undefined { return this.grid.get(Index(c)); }
+    get(c: Coord): T | undefined { return this.grid.get(Index(c)); }
   
     has(c: Coord): boolean { return this.grid.has(Index(c)); }
   
@@ -18,5 +18,23 @@ export class Grid<T> {
   
     get entries(): T[] {
       return Array.from(this.grid, ([, entry]) => entry);
+    }
+  }
+
+  export class ListGrid<T> {
+    constructor() { }
+  
+    private grid = new Grid<T[]>();
+  
+    get(c: Coord): T[] { return this.grid.get(c) || []; }
+  
+    has(c: Coord): boolean { return !!this.grid.get(c)?.length; }
+  
+    // todo: how to manage moving items between cells, and how should we update them???
+  
+    get entries(): T[] {
+        const entries: T[] = [];
+        this.grid.entries.forEach(list => entries.push(...list));
+        return entries;
     }
   }
