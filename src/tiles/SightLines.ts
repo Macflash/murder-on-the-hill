@@ -1,4 +1,7 @@
 // anything beyond this we don't need to render.
+
+import { tileSize } from "./Size";
+
 // As long as we factor in their size as well...
 export const sightDistance = 400; 
 
@@ -27,7 +30,7 @@ export function UpdateFog(){
     ctx.fillRect(0,0,fog.width, fog.height);
     ctx.fillStyle = "rgba(255,255,255,1)";
     ctx.beginPath();
-    ctx.arc(fog.width/2, fog.height/2, 250, 0, Math.PI * 2);
+    ctx.arc(fog.width/2, fog.height/2, tileSize, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
 }
