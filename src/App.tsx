@@ -19,19 +19,26 @@ const player: Item = {
 function Player() {
   const hW = player.width * .5;
   const hH = player.height * .5;
+
   return <div style={{
     position: "absolute",
     zIndex: 50,
     height: player.height,
     width: player.width,
     backgroundColor: "red",
-    left: `calc(50% - ${hW}px)`,
-    right: `calc(50% + ${hW}px)`,
-    top: `calc(50% - ${hH}px)`,
-    bottom: `calc(50% + ${hH}px)`,
+
+    top: player.position.y - centerY + (.5 * window.innerHeight) - hH,
+    left: player.position.x - centerX + (.5 * window.innerWidth) - hW,
+
+    //left: `calc(50% - ${hW}px)`,
+    //right: `calc(50% + ${hW}px)`,
+    //top: `calc(50% - ${hH}px)`,
+    //bottom: `calc(50% + ${hH}px)`,
   }}>
   </div>;
 }
+
+var showMap = false;
 
 function App() {
   const [, setState] = React.useState(0);
@@ -43,15 +50,15 @@ function App() {
 
   return (
     <div className="App" style={{ overflow: "hidden" }}>
-      {/*
-      <div style={{ zIndex: 100, bottom: 0, padding: 20, position: "absolute", left: 0, right: 0 }}>
-        <button onClick={() => { centerY -= 100; rerender(); }}>UP!</button>
-        <button onClick={() => { centerY += 100; rerender(); }}>DOWN!</button>
-        <button onClick={() => { centerX -= 100; rerender(); }}>LEFT!</button>
-        <button onClick={() => { centerX += 100; rerender(); }}>RIGHT!</button> 
-        <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>CENTER!</button>
-      </div>
-      */}
+      {showMap ?
+        <div style={{ zIndex: 100, bottom: 0, padding: 20, position: "absolute", left: 0, right: 0 }}>
+          <div style={{ color: "white" }}>Map</div>
+          <button onClick={() => { centerY -= 100; rerender(); }}>UP!</button>
+          <button onClick={() => { centerY += 100; rerender(); }}>DOWN!</button>
+          <button onClick={() => { centerX -= 100; rerender(); }}>LEFT!</button>
+          <button onClick={() => { centerX += 100; rerender(); }}>RIGHT!</button>
+          <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>CENTER!</button>
+        </div> : null}
       <Player />
 
       <div>
@@ -71,26 +78,15 @@ function App() {
             //filter: "blur(25px)",
           }} />
 
-        <div id="gamefloor" style={{mixBlendMode: "normal"}}>
+        <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
           {FirstFloor.tiles.map((tile) => <GridTile
-          overlayMode={false}
+            overlayMode={showMap}
             floor={FirstFloor}
             tile={tile}
             key={Index(tile.x, tile.y)}
           />)}
         </div>
-        
-        <div id="mapoverlay" style={{mixBlendMode: "normal"}}>
-          {FirstFloor.tiles.map((tile) => <GridTile
-          overlayMode={true}
-            floor={FirstFloor}
-            tile={tile}
-            key={Index(tile.x, tile.y)}
-          />)}
-        </div>
-
       </div>
-
 
     </div>
   );
@@ -101,10 +97,16 @@ let upPressed = false;
 let rightPressed = false;
 let downPressed = false;
 
+let mPressed = false;
+
 let s = sightDistance;
 
 document.addEventListener('keydown', e => {
-  //console.log(e.key);
+  if (e.key == "m" || e.key == "M") {
+    if (!mPressed) { showMap = !showMap; }
+    mPressed = true;
+  }
+
   if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
     leftPressed = true;
     rightPressed = false;
@@ -137,22 +139,42 @@ document.addEventListener('keyup', e => {
   if (e.key == "s" || e.key == "S" || e.key == "ArrowDown") {
     downPressed = false;
   }
+  if (e.key == "m" || e.key == "M") {
+    mPressed = false;
+  }
 });
 
 const moveSpeed = 2;
+const mapSpeed = 5;
 
 function animate() {
-  if (leftPressed) {
-    player.position.x -= moveSpeed;
+  if (showMap) {
+    if (leftPressed) {
+      centerX -= mapSpeed;
+    }
+    if (rightPressed) {
+      centerX += mapSpeed;
+    }
+    if (upPressed) {
+      centerY -= mapSpeed;
+    }
+    if (downPressed) {
+      centerY += mapSpeed;
+    }
   }
-  if (rightPressed) {
-    player.position.x += moveSpeed;
-  }
-  if (upPressed) {
-    player.position.y -= moveSpeed;
-  }
-  if (downPressed) {
-    player.position.y += moveSpeed;
+  else {
+    if (leftPressed) {
+      player.position.x -= moveSpeed;
+    }
+    if (rightPressed) {
+      player.position.x += moveSpeed;
+    }
+    if (upPressed) {
+      player.position.y -= moveSpeed;
+    }
+    if (downPressed) {
+      player.position.y += moveSpeed;
+    }
   }
 
   // for now we are assuming the player is ALWAYS centered. 
@@ -161,8 +183,10 @@ function animate() {
   CollidePlayerWithWalls(player, FirstFloor);
 
   // FOLLOW CAM
-  centerX = player.position.x;
-  centerY = player.position.y;
+  if (!showMap) {
+    centerX = player.position.x;
+    centerY = player.position.y;
+  }
 
   UpdateFog();
   RenderApp();
