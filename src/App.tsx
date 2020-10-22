@@ -3,6 +3,7 @@ import './App.css';
 import { GridTile } from './GridTile';
 import { CollidePlayerWithWalls, Item } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
+import { sightDistance, UpdateFog } from './tiles/SightLines';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -39,6 +40,7 @@ function App() {
   }, [setState]);
 
   React.useEffect(() => { RenderApp = rerender; }, [rerender]);
+
   return (
     <div className="App" style={{ overflow: "hidden" }}>
       {/*
@@ -52,13 +54,42 @@ function App() {
       */}
       <Player />
 
-      <div id="gamefloor">
-        {FirstFloor.tiles.map((tile) => <GridTile
-          floor={FirstFloor}
-          tile={tile}
-          key={Index(tile.x, tile.y)}
-        />)}
+      <div>
+        <canvas id="fog"
+          width={window.innerWidth}
+          height={window.innerHeight}
+          style={{
+            mixBlendMode: "multiply",
+            position: "absolute",
+            zIndex: 5,
+            width: "100%",
+            height: "100%",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }} />
+
+        <div id="gamefloor" style={{mixBlendMode: "normal"}}>
+          {FirstFloor.tiles.map((tile) => <GridTile
+          overlayMode={false}
+            floor={FirstFloor}
+            tile={tile}
+            key={Index(tile.x, tile.y)}
+          />)}
+        </div>
+        
+        <div id="mapoverlay" style={{mixBlendMode: "normal"}}>
+          {FirstFloor.tiles.map((tile) => <GridTile
+          overlayMode={true}
+            floor={FirstFloor}
+            tile={tile}
+            key={Index(tile.x, tile.y)}
+          />)}
+        </div>
+
       </div>
+
 
     </div>
   );
@@ -69,21 +100,23 @@ let upPressed = false;
 let rightPressed = false;
 let downPressed = false;
 
+let s = sightDistance;
+
 document.addEventListener('keydown', e => {
   //console.log(e.key);
   if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
     leftPressed = true;
     rightPressed = false;
   }
-  if (e.key == "d" ||e.key == "D" || e.key == "ArrowRight") {
+  if (e.key == "d" || e.key == "D" || e.key == "ArrowRight") {
     rightPressed = true;
     leftPressed = false;
   }
-  if (e.key == "w" ||e.key == "W" || e.key == "ArrowUp") {
+  if (e.key == "w" || e.key == "W" || e.key == "ArrowUp") {
     upPressed = true;
     downPressed = false;
   }
-  if (e.key == "s" ||e.key == "S" || e.key == "ArrowDown") {
+  if (e.key == "s" || e.key == "S" || e.key == "ArrowDown") {
     downPressed = true;
     upPressed = false;
   }
@@ -94,13 +127,13 @@ document.addEventListener('keyup', e => {
   if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
     leftPressed = false;
   }
-  if (e.key == "d" ||e.key == "D" || e.key == "ArrowRight") {
+  if (e.key == "d" || e.key == "D" || e.key == "ArrowRight") {
     rightPressed = false;
   }
-  if (e.key == "w" ||e.key == "W" || e.key == "ArrowUp") {
+  if (e.key == "w" || e.key == "W" || e.key == "ArrowUp") {
     upPressed = false;
   }
-  if (e.key == "s" ||e.key == "S" || e.key == "ArrowDown") {
+  if (e.key == "s" || e.key == "S" || e.key == "ArrowDown") {
     downPressed = false;
   }
 });
@@ -130,7 +163,7 @@ function animate() {
   centerX = player.position.x;
   centerY = player.position.y;
 
-
+  UpdateFog();
   RenderApp();
   requestAnimationFrame(() => animate());
 }

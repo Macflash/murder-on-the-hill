@@ -22,8 +22,8 @@ window.addEventListener('resize', ()=>{
 
 console.log("Initial view dist", tileViewDist);
 
-export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
-  const { tile, floor } = props;
+export const GridTile: React.FC<{ tile: Tile; floor: Floor; overlayMode: boolean}> = props => {
+  const { tile, floor, overlayMode } = props;
 
   // check screen space if we should render it!
   const tileCoord = { x: tile.x, y: tile.y };
@@ -34,6 +34,7 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
 
   return <div
     style={{
+      zIndex: overlayMode ? 10 : 4,
       position: "absolute",
       height: tileSize,
       width: tileSize,
@@ -44,10 +45,11 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
       alignItems: "center",
       color: "white",
       //border: '5px solid black',
-      backgroundColor: "#663333",
+      backgroundColor:  overlayMode ? undefined : "#663333",
     }}>
     {tile.info.name}
     {AllDirections().map(d => <GridWall
+      overlayMode={overlayMode}
       tile={tile}
       floor={floor}
       direction={d}
@@ -57,14 +59,14 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; }> = props => {
   </div>;
 }
 
-function getWallPosition(direction: Direction) {
+function getWallPosition(direction: Direction, size: number) {
   let top: string | number = 0;
   let bottom: string | number = 0;
   let left: string | number = 0;
   let right: string | number = 0;
 
-  let width: number | undefined = wallSize;
-  let height: number | undefined = wallSize;
+  let width: number | undefined = size;
+  let height: number | undefined = size;
 
   switch (direction) {
     case "TOP":
@@ -88,14 +90,17 @@ function getWallPosition(direction: Direction) {
   return { top, bottom, left, right, width, height };
 }
 
-export const GridWall: React.FC<{ tile: Tile; floor: Floor; direction: Direction; hasDoor: boolean; opened: boolean; }> = props => {
-  const { direction, opened, hasDoor, tile, floor } = props;
+export const GridWall: React.FC<{ overlayMode: boolean, tile: Tile; floor: Floor; direction: Direction; hasDoor: boolean; opened: boolean; }> = props => {
+  const { direction, opened, hasDoor, tile, floor, overlayMode } = props;
   const row = direction == "TOP" || direction == "BOTTOM";
-  const filler = <div style={{ flex: "auto", backgroundColor: "#322", height: row ? "100%" : undefined, width: row ? undefined : "100%" }}></div>;
+  const filler = <div style={{ 
+    flex: "auto",
+     backgroundColor: "#322",
+      height: row ? "100%" : undefined, width: row ? undefined : "100%" }}></div>;
 
   return <div
     style={{
-      ...getWallPosition(direction),
+      ...getWallPosition(direction, overlayMode ? 3 : wallSize),
       position: "absolute",
       display: "flex",
       flexDirection: row ? "row" : "column",
@@ -106,7 +111,11 @@ export const GridWall: React.FC<{ tile: Tile; floor: Floor; direction: Direction
     {filler}
     {hasDoor ?
       <div
-        style={{ cursor: opened ? undefined : "pointer", height: doorSize, width: doorSize, backgroundColor: opened ? "" : "grey" }}
+        style={{ 
+          cursor: opened ? undefined : "pointer",
+           height: doorSize, 
+           width: doorSize,
+            backgroundColor: opened ? "" : "grey" }}
         onClick={opened ? undefined : () => {
           floor.fillCoord(MoveCoord(tile.coord, direction));
           RenderApp();
