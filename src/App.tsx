@@ -1,44 +1,18 @@
 import React from 'react';
 import './App.css';
 import { GridTile } from './GridTile';
-import { CollidePlayerWithWalls, Item } from './tiles/Collision';
+import { CollidePlayerWithWalls } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
 import { sightDistance, UpdateFog } from './tiles/SightLines';
+import { Player, player } from './Player';
 
 export let centerX = 0;
 export let centerY = 0;
 
 export var RenderApp = () => { };
 
-const player: Item = {
-  position: { x: 0, y: 0 },
-  height: 30,
-  width: 15,
-}
-
-function Player() {
-  const hW = player.width * .5;
-  const hH = player.height * .5;
-
-  return <div style={{
-    position: "absolute",
-    zIndex: 50,
-    height: player.height,
-    width: player.width,
-    backgroundColor: "red",
-
-    top: player.position.y - centerY + (.5 * window.innerHeight) - hH,
-    left: player.position.x - centerX + (.5 * window.innerWidth) - hW,
-
-    //left: `calc(50% - ${hW}px)`,
-    //right: `calc(50% + ${hW}px)`,
-    //top: `calc(50% - ${hH}px)`,
-    //bottom: `calc(50% + ${hH}px)`,
-  }}>
-  </div>;
-}
-
 var showMap = false;
+var showFog = false; // turn off for now.. Sightlines would be cool, but circle looks dumb.
 
 function App() {
   const [, setState] = React.useState(0);
@@ -62,7 +36,7 @@ function App() {
       <Player />
 
       <div>
-        <canvas id="fog"
+        { showFog ? <canvas id="fog"
           width={window.innerWidth}
           height={window.innerHeight}
           style={{
@@ -76,7 +50,7 @@ function App() {
             bottom: 0,
             left: 0,
             //filter: "blur(25px)",
-          }} />
+          }} /> : null}
 
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
           {FirstFloor.tiles.map((tile) => <GridTile
@@ -145,7 +119,7 @@ document.addEventListener('keyup', e => {
 });
 
 const moveSpeed = 2;
-const mapSpeed = 5;
+const mapSpeed = 7;
 
 function animate() {
   if (showMap) {

@@ -11,7 +11,6 @@ export class Floor {
 
   private grid = new Map<string, Tile>();
 
-
   getCoord(c: Coord): Tile | undefined { return this.getTile(c.x, c.y); }
   getTile(x: number, y: number): Tile | undefined { return this.grid.get(Index(x, y)); }
 
@@ -59,16 +58,14 @@ export class Floor {
       }
     });
 
-    console.log("fill tile needs these doors:", neededDoors, "and these walls:", neededWalls);
-
-    // now find available tiles
+    // Find possible tiles
+    // TODO: Factor in floor type and stuff.
     const matchingTiles = TileLibrary.filter(tile => tile.canPlace(neededDoors, neededWalls));
-    console.log("These tiles could fit here!", matchingTiles);
-    // pick a random tile!
+
+    // Pick a random tile from the possible ones.
     if (!matchingTiles) { throw "wow we should really fix that!"; }
 
     const newTile = matchingTiles[Math.floor(Math.random() * matchingTiles.length)].copy();
-    console.log("adding new tile!", newTile);
     this.setTile(newTile, x, y);
   }
 }

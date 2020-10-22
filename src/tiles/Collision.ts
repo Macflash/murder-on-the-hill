@@ -6,28 +6,8 @@ import { doorSize, wallSize } from "../GridTile";
 import { Coord, MoveCoord } from "./Coord";
 import { Direction } from "./Direction";
 import { Floor } from "./Floor";
+import { Item } from "./Items";
 import { tileSize } from "./Size";
-
-export interface Item {
-    position: Coord,
-    height: number,
-    width: number,
-
-    //    movable?: boolean, // can it be pushed?
-    //mass?: number, // how heavy is it?
-
-    // Oh? What, you didn't think we would do PHYSICS?
-    // Fuck yeah we will.
-    //speedX: number,
-    //speedY: number,
-}
-
-var items: Item[] = [];
-// yo if we stored these BY room it would be pretty cool.
-
-export function AddItem(item: Item) {
-    items.push(item);
-}
 
 /** The TILE the item is in. */
 export function GetTileCoord(c: Coord): Coord {
