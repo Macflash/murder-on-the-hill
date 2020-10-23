@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css",
-    "main.js": "/murder-on-the-hill/static/js/main.14957f19.chunk.js",
-    "main.js.map": "/murder-on-the-hill/static/js/main.14957f19.chunk.js.map",
+    "main.js": "/murder-on-the-hill/static/js/main.4253dc86.chunk.js",
+    "main.js.map": "/murder-on-the-hill/static/js/main.4253dc86.chunk.js.map",
     "runtime-main.js": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js",
     "runtime-main.js.map": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js.map",
-    "static/js/2.1471b5d7.chunk.js": "/murder-on-the-hill/static/js/2.1471b5d7.chunk.js",
-    "static/js/2.1471b5d7.chunk.js.map": "/murder-on-the-hill/static/js/2.1471b5d7.chunk.js.map",
+    "static/js/2.fee7fb8f.chunk.js": "/murder-on-the-hill/static/js/2.fee7fb8f.chunk.js",
+    "static/js/2.fee7fb8f.chunk.js.map": "/murder-on-the-hill/static/js/2.fee7fb8f.chunk.js.map",
     "index.html": "/murder-on-the-hill/index.html",
-    "precache-manifest.c7941efceea8bd3e546ea5537a7030e1.js": "/murder-on-the-hill/precache-manifest.c7941efceea8bd3e546ea5537a7030e1.js",
+    "precache-manifest.68c4aa3c0d7b5151acf167d72f4ea33f.js": "/murder-on-the-hill/precache-manifest.68c4aa3c0d7b5151acf167d72f4ea33f.js",
     "service-worker.js": "/murder-on-the-hill/service-worker.js",
     "static/css/main.2cf0a9eb.chunk.css.map": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css.map",
-    "static/js/2.1471b5d7.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.1471b5d7.chunk.js.LICENSE.txt"
+    "static/js/2.fee7fb8f.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.fee7fb8f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.0ef4b842.js",
-    "static/js/2.1471b5d7.chunk.js",
+    "static/js/2.fee7fb8f.chunk.js",
     "static/css/main.2cf0a9eb.chunk.css",
-    "static/js/main.14957f19.chunk.js"
+    "static/js/main.4253dc86.chunk.js"
   ]
 }
