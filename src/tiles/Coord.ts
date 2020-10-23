@@ -27,6 +27,28 @@ export function MidPoint(a: Coord, b: Coord) {
   };
 }
 
+
+export function Copy(a: Coord) {
+  return {
+    x: (a.x),
+    y: (a.y),
+  };
+}
+
+export function Add(a: Coord, b: Coord) {
+  return {
+    x: (a.x + b.x),
+    y: (a.y + b.y),
+  };
+}
+
+export function Multiply(a: Coord, b: number) {
+  return {
+    x: (a.x * b),
+    y: (a.y * b),
+  };
+}
+
 // Distances ordered by their stupidness
 export function Distance(a: Coord, b: Coord) {
   return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));

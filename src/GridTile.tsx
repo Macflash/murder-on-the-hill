@@ -1,11 +1,12 @@
 import React from 'react';
-import { EitherDirectionDistance, HammingDistance, MoveCoord } from './tiles/Coord';
+import { Add, EitherDirectionDistance, HammingDistance, MoveCoord, Multiply } from './tiles/Coord';
 import { Direction, AllDirections } from './tiles/Direction';
 import { Tile } from './tiles/Tile';
 import { centerY, centerX, RenderApp } from './App';
 import { Floor } from "./tiles/Floor";
 import { GetTileCoord } from './tiles/Collision';
 import { tileSize } from './tiles/Size';
+import { GridItem, itemZindex } from './tiles/Items';
 
 export const wallSize = 12;
 export const doorSize = 100;
@@ -32,7 +33,8 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; overlayMode: boolean
     return null;
   }
 
-  return <div
+
+  return <><div
     style={{
       zIndex: overlayMode ? 10 : 4,
       position: "absolute",
@@ -56,7 +58,12 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; overlayMode: boolean
       hasDoor={tile.doors.has(d)}
       opened={tile.hasNeighbor(floor, d)}
     />)}
-  </div>;
+  </div>
+  {tile.info.items?.filter(item => !item.hidden).map(item => <GridItem 
+  item={item} 
+  // this was bad and you should feel bad: tileOffset={tileCenter}
+   />)}
+  </>;
 }
 
 function getWallPosition(direction: Direction, size: number) {

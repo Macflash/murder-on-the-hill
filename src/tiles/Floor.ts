@@ -1,7 +1,8 @@
-import { Coord, MoveCoord } from './Coord';
+import { Add, Coord, MoveCoord, Multiply } from './Coord';
 import { Direction, AllDirections, Opposite } from './Direction';
 import { Tile } from './Tile';
-import { TileLibrary, FourWay } from './RegisterTiles';
+import { TileLibrary, FourWay } from './Rooms';
+import { tileSize } from './Size';
 
 export function IndexCoord(c: Coord) { return Index(c.x, c.y); }
 export function Index(x: number, y: number) { return `${x}, ${y}`; }
@@ -26,6 +27,15 @@ export class Floor {
 
     tile.x = x;
     tile.y = y;
+    
+    const tileCenter = Multiply(Add(tile.coord, { x: 0, y: 0 }), tileSize);
+    console.log("tile center!", tileCenter);
+    tile.info.items?.forEach(item =>{
+    console.log("item " + item.name, item.position);
+    item.position = Add(item.position, tileCenter);
+    console.log("new position " + item.name, item.position);
+    });
+
     this.grid.set(Index(x, y), tile);
   }
 
@@ -40,7 +50,6 @@ export class Floor {
 
   fillCoord(c: Coord) { this.fillTile(c.x, c.y); }
   fillTile(x: number, y: number) {
-    // fill a gap with a VALID tile. Woops do we need rotation soon?
     // 1. get all tiles bordering this.
     const neighbors = AllDirections().map(d => this.getCoord(MoveCoord({ x, y }, d)));
     const neededDoors = new Set<Direction>();
@@ -59,13 +68,23 @@ export class Floor {
     });
 
     // Find possible tiles
-    // TODO: Factor in floor type and stuff.
+    // TODO: Factor in floor (basement, attic, etc) and stuff.
     const matchingTiles = TileLibrary.filter(tile => tile.canPlace(neededDoors, neededWalls));
 
+    // TODO: we should never CLOSE off the entire floor, E.G. you should always be able to have at least 1 open door on each floor.
+
     // Pick a random tile from the possible ones.
-    if (!matchingTiles) { throw "wow we should really fix that!"; }
+    if (!matchingTiles) { throw new Error("No valid tile can go there! Wow we should really fix that!"); }
 
     const newTile = matchingTiles[Math.floor(Math.random() * matchingTiles.length)].copy();
+
+    // PICK items that apear
+
+    // things can have like SHELVES/etc you need to search
+    // things can be on the ground
+    // rooms have affinities for certain items, but never GUARANTEED
+    // E>G> Knife often found in Kitchens.
+    
     this.setTile(newTile, x, y);
   }
 }

@@ -1,8 +1,9 @@
 import React from 'react';
-import { GridItem, Item } from "./tiles/Items";
+import { GridItem, Item, Player } from "./tiles/Items";
 import kid_green from "./images/players/kid_green.png";
 
-export const player: Item = {
+export const player: Player = {
+  // item stuff
   position: { x: 0, y: 0 },
   height: 50,
   width: 25,
@@ -11,10 +12,20 @@ export const player: Item = {
   velocity: { x: 0, y: 0 },
   mass: 140,
   image: kid_green,
+  
+  //player stuff
+  fear: 0,
+  health: 100,
+  intelligence: 5,
+  speed: 2,
+  inventory: [],
+  spirit: 2,
+  strength: 5,
+  
 };
 
 export const playerZindex = 51;
 
-export function Player() {
+export function GridPlayer() {
   return <GridItem item={player} zIndex={playerZindex} />
 }

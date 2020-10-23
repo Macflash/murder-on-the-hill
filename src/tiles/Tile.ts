@@ -1,11 +1,14 @@
 import { Coord, MoveCoord } from './Coord';
 import { Direction, Rotate } from './Direction';
 import { Floor } from './Floor';
+import { Item, CopyItem } from './Items';
 
 interface TileInfo {
   name: string;
 
   doors: Direction[];
+
+  items?: Item[]; // These positions are in relative roomX, roomY.
 }
 
 export class Tile {
@@ -54,7 +57,10 @@ export class Tile {
   }
 
   copy(r?: number) {
-    const t = new Tile(this.info);
+    const t = new Tile({
+      ...this.info, 
+      items: this.info.items?.map(item => CopyItem(item)),
+    });
     if (r) {
       t.rotate(r);
     }

@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
 import { GridTile } from './GridTile';
-import { ApplyFriction, CollideItems, CollideWithWalls, MoveItems } from './tiles/Collision';
+import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
 import { sightDistance, UpdateFog } from './tiles/SightLines';
-import { Player, player } from './Player';
+import { GridPlayer, player } from './Player';
 import { GetItems, GridItem, Item } from './tiles/Items';
+import { Interactions, SetInteractables } from './tiles/Interaction';
+import { Inventory } from './tiles/Inventory';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -14,15 +16,15 @@ export var RenderApp = () => { };
 
 var showMap = false;
 var showFog = true; // turn off for now.. Sightlines would be cool, but circle looks dumb.
-const canvasStyle:React.CSSProperties = {
+const canvasStyle: React.CSSProperties = {
   position: "absolute",
-            zIndex: 5,
-            width: "100%",
-            height: "100%",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
+  zIndex: 5,
+  width: "100%",
+  height: "100%",
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
 };
 
 function App() {
@@ -44,7 +46,7 @@ function App() {
           <button onClick={() => { centerX += 100; rerender(); }}>RIGHT!</button>
           <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>CENTER!</button>
         </div> : null}
-      <Player />
+      <GridPlayer />
 
       <div>
 
@@ -71,6 +73,9 @@ function App() {
 
         </div>
       </div>
+
+      <Interactions player={player} />
+      <Inventory player={player} />
 
     </div>
   );
@@ -174,6 +179,18 @@ function animate() {
   //GetItems().forEach(item => CollideWithWalls(item, FirstFloor));
   //CollideItems([player]);
   ApplyFriction([player]);
+
+  // TODO: don't check for interaction distance EVERY frame, this is totaly overkill
+  const roomItems = FirstFloor.getCoord(GetTileCoord(player.position))?.info.items?.filter(item => !item.hidden);
+  SetInteractables(
+    GetItemsInInteractionDistance(
+      player,
+      [
+        ...GetItems(),
+        ...(roomItems || []) // YO! This doesn't handle the tile offset... these are all RELATIVE. maybe we should CHANGE that. the relative thing is really tough.
+      ]
+    )
+  );
 
   // FOLLOW CAM
   if (!showMap) {

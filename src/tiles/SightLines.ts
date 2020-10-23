@@ -20,70 +20,6 @@ window.addEventListener('resize', () => {
     //UpdateFog();
 });
 
-// terrible stripped down version of the actual collide item with wall function
-export function IsInWall(c: Coord, floor?: Floor) {
-    const hT = .5 * tileSize;
-    const hW = 1;
-    const hH = 1;
-    const hD = .5 * doorSize;
-
-    const hDX = hD - hW;
-    const hDY = hD - hH;
-
-    // which TILE is it in?
-
-    const tileCoord = GetTileCoord(c);
-    const { x: roomX, y: roomY } = GetRoomCoord({ position: c } as Item, tileCoord);
-
-    const leftWall = hW + wallSize - hT;
-    const rightWall = -1 * leftWall;
-    const topWall = hH + wallSize - hT;
-    const bottomWall = -1 * topWall;
-
-    const tile = floor?.getCoord(tileCoord);
-
-    //hasDoor={tile.doors.has(d)}
-    //opened={tile.hasNeighbor(floor, d)}
-
-    function HasRoom(coord: Coord, direction: Direction) {
-        const hasDoor = tile && tile.doors.has(direction);
-
-        if (!hasDoor) { return false; }
-
-        const newCoord = MoveCoord(coord, direction);
-        return floor?.hasCoord(newCoord);
-    }
-
-    // TODO: Stop weirdness at the EDGE of doors.
-
-    // If you are inside the wall boundary
-    if (roomX <= leftWall) {
-        // AND you are outside of the door area (or there is no door):
-        // Push you back to the edge of the wall.
-        if (Math.abs(roomY) > hDY || !HasRoom(tileCoord, "LEFT")) {
-            return true;
-        }
-    }
-    if (roomX >= rightWall) {
-        if (Math.abs(roomY) > hDY || !HasRoom(tileCoord, "RIGHT")) {
-            return true;
-        }
-    }
-    if (roomY <= topWall) {
-        if (Math.abs(roomX) > hDX || !HasRoom(tileCoord, "TOP")) {
-            return true;
-        }
-    }
-    if (roomY >= bottomWall) {
-        if (Math.abs(roomX) > hDX || !HasRoom(tileCoord, "BOTTOM")) {
-            return true;
-        }
-    }
-
-    // tile
-}
-
-
 /** Returns where this hits a wall! */
 const rayStep = wallSize;
 var rayLength = 10 + tileViewDist * tileSize / rayStep; //was like 75 or 100;
@@ -123,7 +59,7 @@ export function shootRaysInCircle(start: Coord, floor: Floor) {
     return points;
 }
 
-function toScreenSpot(c: Coord): Coord {
+export function toScreenSpot(c: Coord): Coord {
     return {
         x: c.x - centerX + (.5 * window.innerWidth),
         y: c.y - centerY + (.5 * window.innerHeight),

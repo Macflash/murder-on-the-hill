@@ -3,7 +3,7 @@
 // #1 only can hit things in your room (or very rarely a neighboring room that is close by..)
 
 import { doorSize, wallSize } from "../GridTile";
-import { Coord, MidPoint, MoveCoord } from "./Coord";
+import { Coord, Distance, MidPoint, MoveCoord } from "./Coord";
 import { Direction } from "./Direction";
 import { Floor } from "./Floor";
 import { GetItems, Item, RectangleCollision } from "./Items";
@@ -27,17 +27,18 @@ export function GetRoomCoord(item: Item, tileCoord: Coord): Coord {
 
 const doorEdgeSize = 3;
 
-export function GetWallCorners(){
+export function GetWallCorners() {
     // ray trace to all of these basically?
 }
-export function HasRoomOrCreate(floor: Floor|undefined, tile:Tile|undefined, coord: Coord, direction: Direction, create: boolean) {
+
+export function HasRoomOrCreate(floor: Floor | undefined, tile: Tile | undefined, coord: Coord, direction: Direction, create: boolean) {
     const hasDoor = tile && tile.doors.has(direction);
 
     if (!hasDoor) { return false; }
 
     const newCoord = MoveCoord(coord, direction);
     if (!floor?.hasCoord(newCoord)) {
-        if(create){
+        if (create) {
             floor?.fillCoord(newCoord);
         }
         else {
@@ -47,6 +48,20 @@ export function HasRoomOrCreate(floor: Floor|undefined, tile:Tile|undefined, coo
 
     return true;
 }
+
+export function HasDoor(tile: Tile | undefined, direction: Direction) {
+    return tile && tile.doors.has(direction);
+}
+
+export function CreateRoomIfNeeded(floor: Floor | undefined, coord: Coord, direction: Direction) {
+    const newCoord = MoveCoord(coord, direction);
+    if (!floor?.hasCoord(newCoord)) {
+        floor?.fillCoord(newCoord);
+    }
+}
+
+const openDoorExtraSize = 10;
+
 export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false): boolean {
     const hT = .5 * tileSize;
     const hW = .5 * item.width;
@@ -72,12 +87,12 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
     if (roomX <= leftWall) {
         // AND you are outside of the door area (or there is no door):
         // Push you back to the edge of the wall.
-        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "LEFT", createOnDoor);
+        const hasDoor = hasDoorAndOpenIfNeeded_New("LEFT", tile, roomY, hDY, hH, createOnDoor, floor);
         if (Math.abs(roomY) > hDY || !hasDoor) {
             if (hasDoor && Math.abs(roomY) < hDY + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
-                if(roomY > 0){
+                if (roomY > 0) {
                     item.position.y += hDY - roomY;
                 }
                 else {
@@ -93,12 +108,12 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
         }
     }
     if (roomX >= rightWall) {
-        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "RIGHT", createOnDoor);
+        const hasDoor = hasDoorAndOpenIfNeeded_New("RIGHT", tile, roomY, hDY, hH, createOnDoor, floor);
         if (Math.abs(roomY) > hDY || !hasDoor) {
             if (hasDoor && Math.abs(roomY) < hDY + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
-                if(roomY > 0){
+                if (roomY > 0) {
                     item.position.y += hDY - roomY;
                 }
                 else {
@@ -114,12 +129,12 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
         }
     }
     if (roomY <= topWall) {
-        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "TOP", createOnDoor);
+        const hasDoor = hasDoorAndOpenIfNeeded_New("TOP", tile, roomX, hDX, hW, createOnDoor, floor);
         if (Math.abs(roomX) > hDX || !hasDoor) {
             if (hasDoor && Math.abs(roomX) < hDX + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
-                if(roomX > 0){
+                if (roomX > 0) {
                     item.position.x += hDX - roomX;
                 }
                 else {
@@ -135,12 +150,12 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
         }
     }
     if (roomY >= bottomWall) {
-        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "BOTTOM", createOnDoor);
+        const hasDoor = hasDoorAndOpenIfNeeded_New("BOTTOM", tile, roomX, hDX, hW, createOnDoor, floor);
         if (Math.abs(roomX) > hDX || !hasDoor) {
             if (hasDoor && Math.abs(roomX) < hDX + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
-                if(roomX > 0){
+                if (roomX > 0) {
                     item.position.x += hDX - roomX;
                 }
                 else {
@@ -157,6 +172,14 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
     }
 
     return false;
+}
+
+function hasDoorAndOpenIfNeeded_New(direction: Direction, tile: Tile | undefined, roomY: number, hDY: number, hH: number, createOnDoor: boolean, floor: Floor | undefined) {
+    const hasDoor = HasDoor(tile, direction);
+    if (Math.abs(roomY) <= (hDY + hH + 5) && hasDoor && createOnDoor) {
+        CreateRoomIfNeeded(floor, tile!, direction);
+    }
+    return hasDoor;
 }
 
 export function ApplyFriction(players: Item[]) {
@@ -195,6 +218,18 @@ export function InelasticCollision(a: Item, b: Item) {
     a.velocity.y = y;
     b.velocity.x = x;
     b.velocity.y = y;
+}
+
+export const InteractionRange = 5;
+export function GetItemsInInteractionDistance(player: Item, items: Item[]) {
+    return items.filter((item, i) => {
+        if (Distance(player.position, item.position) < InteractionRange + .25 * (item.width + item.height + player.width + player.height)) {
+            // how do we want to handle multiple items?
+            return true;
+        }
+
+        return false;
+    });
 }
 
 export function CollideItems(players: Item[]) {
