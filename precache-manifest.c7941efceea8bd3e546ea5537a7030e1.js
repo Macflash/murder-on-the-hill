@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "eec0a18da0a50e29f80ecba77ec2ebc5",
+    "revision": "5a7d20197465d7136cc6198809065d14",
     "url": "/murder-on-the-hill/index.html"
   },
   {
-    "revision": "ec684d5f7d311de91c89",
+    "revision": "d8602647e7562eb8e2b4",
     "url": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/murder-on-the-hill/static/js/2.1471b5d7.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "ec684d5f7d311de91c89",
-    "url": "/murder-on-the-hill/static/js/main.c4a70c5e.chunk.js"
+    "revision": "d8602647e7562eb8e2b4",
+    "url": "/murder-on-the-hill/static/js/main.14957f19.chunk.js"
   },
   {
     "revision": "68add5ba027b449fcdef",
