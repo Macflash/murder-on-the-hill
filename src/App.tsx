@@ -150,10 +150,12 @@ function animate() {
     if (leftPressed && player.velocity.x > -moveSpeed) {
       //player.position.x -= moveSpeed;
       player.velocity.x -= playerAccel;
+      player.imageTransform = undefined;
     }
     if (rightPressed && player.velocity.x < moveSpeed) {
       //player.position.x += moveSpeed;
       player.velocity.x += playerAccel;
+      player.imageTransform = "scale(-1,1)";
     }
     if (upPressed && player.velocity.y > -moveSpeed) {
       //player.position.y -= moveSpeed;

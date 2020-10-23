@@ -1,1 +1,1 @@
-export const tileSize = 300;
+export const tileSize = 400;

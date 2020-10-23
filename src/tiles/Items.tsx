@@ -12,6 +12,8 @@ export interface Item {
 
     mass: number;
     velocity: Coord;
+    image?: string;
+    imageTransform?: string;
 }
 
 export function ToBoundingBox(item: Item) {
@@ -58,10 +60,11 @@ export function GridItem(props: { item: Item, zIndex?: number }) {
             zIndex: props.zIndex || itemZindex,
             height: item.height,
             width: item.width,
-            backgroundColor: item.color || "grey",
+            backgroundColor: item.image ? undefined : item.color || "grey",
             top: item.position.y - centerY + (.5 * window.innerHeight) - hH,
             left: item.position.x - centerX + (.5 * window.innerWidth) - hW,
         }}>
+            {item.image ? <img src={item.image} style={{transform: item.imageTransform}} /> : null}
     </div>;
 }
 
