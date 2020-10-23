@@ -8,7 +8,7 @@ import { GetTileCoord } from './tiles/Collision';
 import { tileSize } from './tiles/Size';
 
 export const wallSize = 10;
-export const doorSize = 48;
+export const doorSize = 75;
 
 // probably only update this on resize
 var screenSize = Math.max(window.innerWidth, window.innerHeight);

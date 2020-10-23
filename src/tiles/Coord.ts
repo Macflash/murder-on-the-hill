@@ -20,15 +20,22 @@ export function MoveCoord(c: Coord, direction: Direction): Coord {
   }
 }
 
+export function MidPoint(a: Coord, b: Coord) {
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+  };
+}
+
 // Distances ordered by their stupidness
-export function Distance(a: Coord, b:Coord) {
+export function Distance(a: Coord, b: Coord) {
   return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 }
 
-export function HammingDistance(a: Coord, b:Coord) {
+export function HammingDistance(a: Coord, b: Coord) {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
-export function EitherDirectionDistance(a: Coord, b:Coord) {
+export function EitherDirectionDistance(a: Coord, b: Coord) {
   return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 }

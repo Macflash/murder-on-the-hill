@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { GridTile } from './GridTile';
-import { CollidePlayerWithWalls } from './tiles/Collision';
+import { ApplyFriction, CollideItems, CollideWithWalls, MoveItems } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
 import { sightDistance, UpdateFog } from './tiles/SightLines';
 import { Player, player } from './Player';
@@ -37,7 +37,7 @@ function App() {
       <Player />
 
       <div>
-        { showFog ? <canvas id="fog"
+        {showFog ? <canvas id="fog"
           width={window.innerWidth}
           height={window.innerHeight}
           style={{
@@ -54,7 +54,7 @@ function App() {
           }} /> : null}
 
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
-          
+
           {FirstFloor.tiles.map((tile) => <GridTile
             overlayMode={showMap}
             floor={FirstFloor}
@@ -62,7 +62,7 @@ function App() {
             key={Index(tile.x, tile.y)}
           />)}
 
-            {GetItems().map((item) => <GridItem item={item} />)}
+          {GetItems().map((item) => <GridItem item={item} />)}
 
         </div>
       </div>
@@ -71,20 +71,12 @@ function App() {
   );
 }
 
-function GetScreenSpaceCoord(item: Item){
-  return {
-    top: item
-  }
-}
-
 let leftPressed = false;
 let upPressed = false;
 let rightPressed = false;
 let downPressed = false;
 
 let mPressed = false;
-
-let s = sightDistance;
 
 document.addEventListener('keydown', e => {
   if (e.key == "m" || e.key == "M") {
@@ -130,6 +122,7 @@ document.addEventListener('keyup', e => {
 });
 
 const moveSpeed = 2;
+const playerAccel = .3;
 const mapSpeed = 7;
 
 function animate() {
@@ -148,24 +141,32 @@ function animate() {
     }
   }
   else {
-    if (leftPressed) {
-      player.position.x -= moveSpeed;
+    player.velocity = player.velocity || { x: 0, y: 0 };
+    if (leftPressed && player.velocity.x > -moveSpeed) {
+      //player.position.x -= moveSpeed;
+      player.velocity.x -= playerAccel;
     }
-    if (rightPressed) {
-      player.position.x += moveSpeed;
+    if (rightPressed && player.velocity.x < moveSpeed) {
+      //player.position.x += moveSpeed;
+      player.velocity.x += playerAccel;
     }
-    if (upPressed) {
-      player.position.y -= moveSpeed;
+    if (upPressed && player.velocity.y > -moveSpeed) {
+      //player.position.y -= moveSpeed;
+      player.velocity.y -= playerAccel;
     }
-    if (downPressed) {
-      player.position.y += moveSpeed;
+    if (downPressed && player.velocity.y < moveSpeed) {
+      //player.position.y += moveSpeed;
+      player.velocity.y += playerAccel;
     }
   }
 
   // for now we are assuming the player is ALWAYS centered. 
   // This is probably bad and we may want to change it when we switch to a canvas based approach.
-
-  CollidePlayerWithWalls(player, FirstFloor);
+  MoveItems([player]);
+  CollideWithWalls(player, FirstFloor);
+  //GetItems().forEach(item => CollideWithWalls(item, FirstFloor));
+  //CollideItems([player]);
+  ApplyFriction([player]);
 
   // FOLLOW CAM
   if (!showMap) {
@@ -173,7 +174,7 @@ function animate() {
     centerY = player.position.y;
   }
 
-  UpdateFog();
+  //TODO: later. UpdateFog();
   RenderApp();
   requestAnimationFrame(() => animate());
 }
