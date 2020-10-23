@@ -65,6 +65,7 @@ export function GridItem(props: { item: Item, zIndex?: number }) {
     </div>;
 }
 
+/*
 AddItem({
     position: { x: Math.random() * 600 - 300, y: Math.random() * 400 - 200 },
     height: 15,
@@ -105,3 +106,4 @@ AddItem({
     mass: 70,
     velocity: { x: 0, y: 0 },
 });
+*/
