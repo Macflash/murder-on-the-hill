@@ -11,6 +11,12 @@ export interface Item {
     description?: string;
     color?: string; // TODO this should be an image or graphic or canvas dude!
 
+    /** Whether the item can be moved by being collided with */
+    moveable?: boolean; // this could probably be signaled by undefined VELOCITY? idk.. w/e
+
+    /** Whether player/other items can go through the item */
+    blockObjects?: boolean;
+
     mass: number;
     velocity: Coord;
     image?: string;
@@ -196,11 +202,12 @@ export const purse: Item = {
 };
 
 export const table: Item = {
-    position: { x: -165, y: -150 },
+    position: { x: -70, y: -150 },
     height: 70,
     width: 40,
     color: "tan",
     name: "Table",
+    blockObjects: true,
     mass: 70,
     velocity: { x: 0, y: 0 },
 };

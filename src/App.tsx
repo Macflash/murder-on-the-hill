@@ -177,7 +177,6 @@ function animate() {
   MoveItems([player]);
   CollideWithWalls(player, FirstFloor, true);
   //GetItems().forEach(item => CollideWithWalls(item, FirstFloor));
-  //CollideItems([player]);
   ApplyFriction([player]);
 
   // TODO: don't check for interaction distance EVERY frame, this is totaly overkill
@@ -191,6 +190,11 @@ function animate() {
       ]
     )
   );
+  
+  CollideItems([
+    player,
+    ...(roomItems?.filter(item => item.moveable || item.blockObjects) || [])
+  ]);
 
   // FOLLOW CAM
   if (!showMap) {

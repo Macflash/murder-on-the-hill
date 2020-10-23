@@ -12,6 +12,9 @@ export const player: Player = {
   velocity: { x: 0, y: 0 },
   mass: 140,
   image: kid_green,
+
+  blockObjects: true,
+  moveable: true, // Is this really smart??
   
   //player stuff
   fear: 0,
@@ -21,7 +24,7 @@ export const player: Player = {
   inventory: [],
   spirit: 2,
   strength: 5,
-  
+
 };
 
 export const playerZindex = 51;

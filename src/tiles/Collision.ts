@@ -232,15 +232,87 @@ export function GetItemsInInteractionDistance(player: Item, items: Item[]) {
     });
 }
 
+function UnmoveableCollision(moveable: Item, unmoveable: Item) {
+    // step BACKWARDS on the moveable item VELOCITY?
+    if (moveable.velocity.x === 0 && moveable.velocity.y === 0) {
+        // this is bad but moving you arbitrarily could be worse!! Don't want to go through walls or some crap
+        //    console.error("if you aren't moving you shouldn't have hit an item!!");
+        //   return;
+    }
+
+    const overlapX = .5 * (moveable.width + unmoveable.width) - Math.abs(moveable.position.x - unmoveable.position.x);
+    const overlapY = .5 * (moveable.height + unmoveable.height) - Math.abs(moveable.position.y - unmoveable.position.y);
+
+    // do the smallest overlap to get back to normal?
+    if (overlapX <= overlapY) {
+        // just do that one!
+        if (moveable.position.x < unmoveable.position.x) {
+            moveable.position.x -= overlapX;
+            moveable.velocity.x = -overlapX; // LOL, the bounce is kind of fun. This should really be 0 for inelastic collision.
+        }
+        else {
+            moveable.position.x += overlapX;
+            moveable.velocity.x = overlapX;
+        }
+    }
+    else {
+        // just do that one!
+        if (moveable.position.y < unmoveable.position.y) {
+            moveable.position.y -= overlapY;
+            moveable.velocity.y = -overlapY;
+        }
+        else {
+            moveable.position.y += overlapY;
+            moveable.velocity.y = overlapY;
+        }
+    }
+
+    console.log("overlap", overlapX, overlapY);
+
+    // shoot this doesn't figure out WHICH one it should do...
+    console.log(`${moveable.name} hit an unmoveable ${unmoveable.name}`);
+    /*
+    This is ok for 1D, but shoots people over walls in 2D....
+    // treat this just like a WALL!
+    if (moveable.position.x > unmoveable.position.x) {
+        moveable.position.x = unmoveable.position.x + .5 * (moveable.width + unmoveable.width);
+        //moveable.velocity.x = 0;
+    }
+    if (moveable.position.x <= unmoveable.position.x) {
+        moveable.position.x = unmoveable.position.x - .5 * (moveable.width + unmoveable.width);
+        //moveable.velocity.x = 0;
+    }
+    if (moveable.position.y > unmoveable.position.y) {
+        moveable.position.y = unmoveable.position.y + .5 * (moveable.height + unmoveable.height);
+        //moveable.velocity.y = 0;
+    }
+    if (moveable.position.y <= unmoveable.position.y) {
+        moveable.position.y = unmoveable.position.y - .5 * (moveable.height + unmoveable.height);
+        //moveable.velocity.y = 0;
+    } */
+}
+
+let max_objects_collided = 0;
 export function CollideItems(players: Item[]) {
-    const items = [...players, ...GetItems()];
+    const items = [...players, ...GetItems()].filter(items => items.blockObjects || items.moveable);
+    if (items.length > max_objects_collided) {
+        console.log(`checking collisions for ${items.length} items`);
+        max_objects_collided = items.length;
+    }
+    //console.log("checking collisions for ", items.length);
     items.forEach((item, i) => {
         if (i < items.length - 1) {
             for (let j = i + 1; j < items.length; j++) {
                 if (RectangleCollision(item, items[j])) {
-                    //console.log("COLLISION!", item.name, items[j].name);
-                    // TODO: update velocity and stuff??
-                    InelasticCollision(item, items[j]);
+                    const item_unmoveable = item.blockObjects && !item.moveable;
+                    const other_unmoveable = items[j].blockObjects && !items[j].moveable
+                    if (item_unmoveable && !other_unmoveable) {
+                        UnmoveableCollision(items[j], item);
+                    }
+                    else if (!item_unmoveable && other_unmoveable) {
+                        UnmoveableCollision(item, items[j]);
+                    }
+                    // enable once NOT TERRIBLE InelasticCollision(item, items[j]);
                 }
             }
         }
