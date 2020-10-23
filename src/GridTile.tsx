@@ -12,7 +12,7 @@ export const doorSize = 75;
 
 // probably only update this on resize
 var screenSize = Math.max(window.innerWidth, window.innerHeight);
-var tileViewDist = Math.ceil(screenSize / (2 * tileSize));
+export var tileViewDist = Math.ceil(screenSize / (2 * tileSize));
 
 window.addEventListener('resize', ()=>{
   screenSize = Math.max(window.innerWidth, window.innerHeight);
@@ -92,7 +92,7 @@ function getWallPosition(direction: Direction, size: number) {
 
 export const GridWall: React.FC<{ overlayMode: boolean, tile: Tile; floor: Floor; direction: Direction; hasDoor: boolean; opened: boolean; }> = props => {
   const { direction, opened, hasDoor, tile, floor, overlayMode } = props;
-  const row = direction == "TOP" || direction == "BOTTOM";
+  const row = direction === "TOP" || direction === "BOTTOM";
   const filler = <div style={{ 
     flex: "auto",
      backgroundColor: "#322",

@@ -13,7 +13,17 @@ export let centerY = 0;
 export var RenderApp = () => { };
 
 var showMap = false;
-var showFog = false; // turn off for now.. Sightlines would be cool, but circle looks dumb.
+var showFog = true; // turn off for now.. Sightlines would be cool, but circle looks dumb.
+const canvasStyle:React.CSSProperties = {
+  position: "absolute",
+            zIndex: 5,
+            width: "100%",
+            height: "100%",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+};
 
 function App() {
   const [, setState] = React.useState(0);
@@ -37,20 +47,15 @@ function App() {
       <Player />
 
       <div>
+
         {showFog ? <canvas id="fog"
           width={window.innerWidth}
           height={window.innerHeight}
           style={{
-            mixBlendMode: "multiply",
-            position: "absolute",
-            zIndex: 5,
-            width: "100%",
-            height: "100%",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            //filter: "blur(25px)",
+            ...canvasStyle,
+            opacity: .5,
+            //mixBlendMode: "multiply",
+            filter: "blur(5px)",
           }} /> : null}
 
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
@@ -79,24 +84,24 @@ let downPressed = false;
 let mPressed = false;
 
 document.addEventListener('keydown', e => {
-  if (e.key == "m" || e.key == "M") {
+  if (e.key === "m" || e.key === "M") {
     if (!mPressed) { showMap = !showMap; }
     mPressed = true;
   }
 
-  if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
+  if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
     leftPressed = true;
     rightPressed = false;
   }
-  if (e.key == "d" || e.key == "D" || e.key == "ArrowRight") {
+  if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
     rightPressed = true;
     leftPressed = false;
   }
-  if (e.key == "w" || e.key == "W" || e.key == "ArrowUp") {
+  if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") {
     upPressed = true;
     downPressed = false;
   }
-  if (e.key == "s" || e.key == "S" || e.key == "ArrowDown") {
+  if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") {
     downPressed = true;
     upPressed = false;
   }
@@ -104,19 +109,19 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('keyup', e => {
   //console.log(e.key);
-  if (e.key == "a" || e.key == "A" || e.key == "ArrowLeft") {
+  if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
     leftPressed = false;
   }
-  if (e.key == "d" || e.key == "D" || e.key == "ArrowRight") {
+  if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
     rightPressed = false;
   }
-  if (e.key == "w" || e.key == "W" || e.key == "ArrowUp") {
+  if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") {
     upPressed = false;
   }
-  if (e.key == "s" || e.key == "S" || e.key == "ArrowDown") {
+  if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") {
     downPressed = false;
   }
-  if (e.key == "m" || e.key == "M") {
+  if (e.key === "m" || e.key === "M") {
     mPressed = false;
   }
 });
@@ -163,7 +168,7 @@ function animate() {
   // for now we are assuming the player is ALWAYS centered. 
   // This is probably bad and we may want to change it when we switch to a canvas based approach.
   MoveItems([player]);
-  CollideWithWalls(player, FirstFloor);
+  CollideWithWalls(player, FirstFloor, true);
   //GetItems().forEach(item => CollideWithWalls(item, FirstFloor));
   //CollideItems([player]);
   ApplyFriction([player]);
@@ -174,7 +179,8 @@ function animate() {
     centerY = player.position.y;
   }
 
-  //TODO: later. UpdateFog();
+  //TODO: later. 
+  showFog && UpdateFog(player, FirstFloor);
   RenderApp();
   requestAnimationFrame(() => animate());
 }

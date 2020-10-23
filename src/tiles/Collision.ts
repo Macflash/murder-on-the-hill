@@ -8,6 +8,7 @@ import { Direction } from "./Direction";
 import { Floor } from "./Floor";
 import { GetItems, Item, RectangleCollision } from "./Items";
 import { tileSize } from "./Size";
+import { Tile } from "./Tile";
 
 /** The TILE the item is in. */
 export function GetTileCoord(c: Coord): Coord {
@@ -26,7 +27,27 @@ export function GetRoomCoord(item: Item, tileCoord: Coord): Coord {
 
 const doorEdgeSize = 3;
 
-export function CollideWithWalls(item: Item, floor?: Floor) {
+export function GetWallCorners(){
+    // ray trace to all of these basically?
+}
+export function HasRoomOrCreate(floor: Floor|undefined, tile:Tile|undefined, coord: Coord, direction: Direction, create: boolean) {
+    const hasDoor = tile && tile.doors.has(direction);
+
+    if (!hasDoor) { return false; }
+
+    const newCoord = MoveCoord(coord, direction);
+    if (!floor?.hasCoord(newCoord)) {
+        if(create){
+            floor?.fillCoord(newCoord);
+        }
+        else {
+            return false;
+        }
+    }
+
+    return true;
+}
+export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false): boolean {
     const hT = .5 * tileSize;
     const hW = .5 * item.width;
     const hH = .5 * item.height;
@@ -47,30 +68,13 @@ export function CollideWithWalls(item: Item, floor?: Floor) {
 
     const tile = floor?.getCoord(tileCoord);
 
-    //hasDoor={tile.doors.has(d)}
-    //opened={tile.hasNeighbor(floor, d)}
-
-    function HasRoomOrCreate(coord: Coord, direction: Direction) {
-        const hasDoor = tile && tile.doors.has(direction);
-
-        if (!hasDoor) { return false; }
-
-        const newCoord = MoveCoord(coord, direction);
-        if (!floor?.hasCoord(newCoord)) {
-            floor?.fillCoord(newCoord);
-        }
-
-        return true;
-    }
-
-    // TODO: Stop weirdness at the EDGE of doors.
-
     // If you are inside the wall boundary
     if (roomX <= leftWall) {
         // AND you are outside of the door area (or there is no door):
         // Push you back to the edge of the wall.
-        if (Math.abs(roomY) > hDY || !HasRoomOrCreate(tileCoord, "LEFT")) {
-            if (Math.abs(roomY) < hDY + doorEdgeSize) {
+        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "LEFT", createOnDoor);
+        if (Math.abs(roomY) > hDY || !hasDoor) {
+            if (hasDoor && Math.abs(roomY) < hDY + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
                 if(roomY > 0){
@@ -80,16 +84,18 @@ export function CollideWithWalls(item: Item, floor?: Floor) {
                     item.position.y -= hDY + roomY;
                 }
                 item.velocity.y = 0;
-                return;
+                return true;
             }
 
             item.position.x += leftWall - roomX;
             item.velocity.x = 0;
+            return true;
         }
     }
     if (roomX >= rightWall) {
-        if (Math.abs(roomY) > hDY || !HasRoomOrCreate(tileCoord, "RIGHT")) {
-            if (Math.abs(roomY) < hDY + doorEdgeSize) {
+        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "RIGHT", createOnDoor);
+        if (Math.abs(roomY) > hDY || !hasDoor) {
+            if (hasDoor && Math.abs(roomY) < hDY + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
                 if(roomY > 0){
@@ -99,16 +105,18 @@ export function CollideWithWalls(item: Item, floor?: Floor) {
                     item.position.y -= hDY + roomY;
                 }
                 item.velocity.y = 0;
-                return;
+                return true;
             }
 
             item.position.x += rightWall - roomX;
             item.velocity.x = 0;
+            return true;
         }
     }
     if (roomY <= topWall) {
-        if (Math.abs(roomX) > hDX || !HasRoomOrCreate(tileCoord, "TOP")) {
-            if (Math.abs(roomX) < hDX + doorEdgeSize) {
+        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "TOP", createOnDoor);
+        if (Math.abs(roomX) > hDX || !hasDoor) {
+            if (hasDoor && Math.abs(roomX) < hDX + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
                 if(roomX > 0){
@@ -118,16 +126,18 @@ export function CollideWithWalls(item: Item, floor?: Floor) {
                     item.position.x -= hDX + roomX;
                 }
                 item.velocity.x = 0;
-                return;
+                return true;
             }
 
             item.position.y += topWall - roomY;
             item.velocity.y = 0;
+            return true;
         }
     }
     if (roomY >= bottomWall) {
-        if (Math.abs(roomX) > hDX || !HasRoomOrCreate(tileCoord, "BOTTOM")) {
-            if (Math.abs(roomX) < hDX + doorEdgeSize) {
+        const hasDoor = HasRoomOrCreate(floor, tile, tileCoord, "BOTTOM", createOnDoor);
+        if (Math.abs(roomX) > hDX || !hasDoor) {
+            if (hasDoor && Math.abs(roomX) < hDX + doorEdgeSize) {
                 // so we know you are within the range of the door.
                 // so we want to push you BACK towards the center
                 if(roomX > 0){
@@ -137,15 +147,16 @@ export function CollideWithWalls(item: Item, floor?: Floor) {
                     item.position.x -= hDX + roomX;
                 }
                 item.velocity.x = 0;
-                return;
+                return true;
             }
-            
+
             item.position.y += bottomWall - roomY;
             item.velocity.y = 0;
+            return true;
         }
     }
 
-    // tile
+    return false;
 }
 
 export function ApplyFriction(players: Item[]) {
