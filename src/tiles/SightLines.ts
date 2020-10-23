@@ -147,8 +147,8 @@ export function UpdateFog(player: Item, floor: Floor) {
 
     const rayPoints = shootRaysInCircle(player.position, floor);
 
-    ctx.fillStyle = "yellow";
-    ctx.strokeStyle = "1px yellow";
+    ctx.fillStyle = "lightyellow";
+    ctx.strokeStyle = "1px lightyellow";
     ctx.beginPath();
     const playerCoord = toScreenSpot(player.position);
     ctx.moveTo(playerCoord.x, playerCoord.y);

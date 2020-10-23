@@ -53,7 +53,7 @@ function App() {
           height={window.innerHeight}
           style={{
             ...canvasStyle,
-            opacity: .5,
+            opacity: .2,
             //mixBlendMode: "multiply",
             filter: "blur(5px)",
           }} /> : null}
