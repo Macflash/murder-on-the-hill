@@ -1,22 +1,27 @@
 {
   "files": {
     "main.css": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css",
-    "main.js": "/murder-on-the-hill/static/js/main.df135b73.chunk.js",
-    "main.js.map": "/murder-on-the-hill/static/js/main.df135b73.chunk.js.map",
+    "main.js": "/murder-on-the-hill/static/js/main.61ee9ea9.chunk.js",
+    "main.js.map": "/murder-on-the-hill/static/js/main.61ee9ea9.chunk.js.map",
     "runtime-main.js": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js",
     "runtime-main.js.map": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js.map",
-    "static/js/2.ee5f34af.chunk.js": "/murder-on-the-hill/static/js/2.ee5f34af.chunk.js",
-    "static/js/2.ee5f34af.chunk.js.map": "/murder-on-the-hill/static/js/2.ee5f34af.chunk.js.map",
+    "static/js/2.63e4f214.chunk.js": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js",
+    "static/js/2.63e4f214.chunk.js.map": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js.map",
     "index.html": "/murder-on-the-hill/index.html",
-    "precache-manifest.88a43250e98cbe26b538ee8949fc1de4.js": "/murder-on-the-hill/precache-manifest.88a43250e98cbe26b538ee8949fc1de4.js",
+    "precache-manifest.f1075fa82efa48358e5bc7caa4fde65d.js": "/murder-on-the-hill/precache-manifest.f1075fa82efa48358e5bc7caa4fde65d.js",
     "service-worker.js": "/murder-on-the-hill/service-worker.js",
     "static/css/main.2cf0a9eb.chunk.css.map": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css.map",
-    "static/js/2.ee5f34af.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.ee5f34af.chunk.js.LICENSE.txt"
+    "static/js/2.63e4f214.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js.LICENSE.txt",
+    "static/media/dining_room.jpg": "/murder-on-the-hill/static/media/dining_room.726d2984.jpg",
+    "static/media/entrance.jpg": "/murder-on-the-hill/static/media/entrance.b171268f.jpg",
+    "static/media/kitchen.jpg": "/murder-on-the-hill/static/media/kitchen.46ae08a3.jpg",
+    "static/media/patio.jpg": "/murder-on-the-hill/static/media/patio.1d7a8cf4.jpg",
+    "static/media/storeroom.jpg": "/murder-on-the-hill/static/media/storeroom.b622b705.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.0ef4b842.js",
-    "static/js/2.ee5f34af.chunk.js",
+    "static/js/2.63e4f214.chunk.js",
     "static/css/main.2cf0a9eb.chunk.css",
-    "static/js/main.df135b73.chunk.js"
+    "static/js/main.61ee9ea9.chunk.js"
   ]
 }
