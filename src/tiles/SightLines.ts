@@ -92,7 +92,9 @@ export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, flo
     const ps = toScreenSpot(player.position);
     const gradient = ctx.createRadialGradient(ps.x, ps.y,70, ps.x, ps.y, viewDist * tileSize);
     gradient.addColorStop(0, "lightyellow");
-    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    gradient.addColorStop(.07, "rgba(255,255,0,1)");
+    gradient.addColorStop(.2, "rgba(255,255,0,.8)");
+    gradient.addColorStop(1, "rgba(255,128,0,0)");
 
     ctx.fillStyle = gradient; // "lightyellow";
     ctx.strokeStyle = "1px lightyellow";
