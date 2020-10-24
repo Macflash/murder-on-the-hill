@@ -6,7 +6,11 @@ import { centerX, centerY } from '../App';
 import { player } from '../Player';
 import { UpdateFogCanvas } from './SightLines';
 
-export const FourWay = new Tile({ name: "Fourway", doors: ["TOP", "LEFT", "RIGHT", "BOTTOM"], image: Kitchen });
+export const FourWay = new Tile({ 
+  name: "Fourway",
+   doors: ["TOP", "LEFT", "RIGHT", "BOTTOM"],
+    //image: Kitchen,
+  });
 FourWay.info.items = [CopyItem(table)];
 const TeeWay = new Tile({ name: "TeeWay", doors: ["TOP", "LEFT", "RIGHT"] });
 const Straight = new Tile({ name: "Straight", doors: ["TOP", "BOTTOM"] });
