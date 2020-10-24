@@ -1,34 +1,39 @@
-// anything beyond this we don't need to render.
-
 import { centerX, centerY } from "../App";
-import { doorSize, tileViewDist, wallSize } from "../GridTile";
-import { GetTileCoord, GetRoomCoord, CollideWithWalls } from "./Collision";
-import { Coord, MoveCoord } from "./Coord";
-import { Direction } from "./Direction";
+import { tileSize, wallSize } from "./Size";
+import { CollideWithWalls } from "./Collision";
+import { Coord } from "./Coord";
 import { Floor } from "./Floor";
 import { Item } from "./Items";
-import { tileSize } from "./Size";
 
 // As long as we factor in their size as well...
 export const sightDistance = 400;
+function GetTileViewDist(){
+    var screenSize = Math.max(window.innerWidth, window.innerHeight);
+    return Math.ceil(screenSize / (2 * tileSize));
+}
 
+var viewDist = GetTileViewDist();
+
+/*
 var fog: HTMLCanvasElement;
 var ctx: CanvasRenderingContext2D;
 window.addEventListener('resize', () => {
+    if(!fog){ return; }
     fog.width = window.innerWidth;
     fog.height = window.innerHeight;
     //UpdateFog();
 });
+*/
 
 /** Returns where this hits a wall! */
 const rayStep = wallSize;
-var rayLength = 10 + tileViewDist * tileSize / rayStep; //was like 75 or 100;
+var rayLength = 10 + viewDist * tileSize / rayStep; //was like 75 or 100;
 console.log("ray length", rayLength);
 window.addEventListener('resize', () => {
-    rayLength = 10 + tileViewDist * tileSize / rayStep;
+    rayLength = 10 + viewDist * tileSize / rayStep;
     console.log("ray length", rayLength);
 });
-// 20 is ok, 60 is good, 
+// 20 is ok, 60 is good, 120 is REAL fine. 200 cant really tell the difference.
 const angleSize = Math.PI / 100;
 
 // dude you could probably just CALCULATE (DO the math bro! it's faster) the next time the ray would = .5 tilesize  % tilesize
@@ -66,8 +71,8 @@ export function toScreenSpot(c: Coord): Coord {
     }
 }
 
+/*
 export function UpdateFog(player: Item, floor: Floor) {
-
     if (!ctx) {
         fog = document.getElementById("fog") as HTMLCanvasElement;
         if (!fog) { return; }
@@ -77,13 +82,19 @@ export function UpdateFog(player: Item, floor: Floor) {
         ctx = fog.getContext("2d")!;
         if (!ctx) { return; }
     }
+    UpdateFogCanvas(ctx, player, floor);
+}*/
 
-    //fog.style.opacity = ".5";
-    ctx.clearRect(0, 0, fog.width, fog.height);
+export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, floor: Floor) {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     const rayPoints = shootRaysInCircle(player.position, floor);
+    const ps = toScreenSpot(player.position);
+    const gradient = ctx.createRadialGradient(ps.x, ps.y,70, ps.x, ps.y, viewDist * tileSize);
+    gradient.addColorStop(0, "lightyellow");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
 
-    ctx.fillStyle = "lightyellow";
+    ctx.fillStyle = gradient; // "lightyellow";
     ctx.strokeStyle = "1px lightyellow";
     ctx.beginPath();
     const playerCoord = toScreenSpot(player.position);
@@ -96,72 +107,4 @@ export function UpdateFog(player: Item, floor: Floor) {
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
     ctx.fill();
-
-    // draw LINES to the wall edge. E.G.
-    // we need the player spot and the WALL corners.
-
-}
-
-function sourceInTest() {
-    // TEST ONLY
-
-    /*
-    This would be  the HTML to add in the app:
-     <canvas id="canvas_map"
-              width={window.innerWidth}
-              height={window.innerHeight}
-              style={canvasStyle} />
-              <canvas id="canvas_sightlines"
-                 width={window.innerWidth}
-                 height={window.innerHeight}
-                 style={canvasStyle} />
-                 <canvas id="canvas_result"
-                    width={window.innerWidth}
-                    height={window.innerHeight}
-                    style={canvasStyle} />
-    */
-    const sightCv = document.getElementById("canvas_sightlines") as HTMLCanvasElement;
-    const mapCv = document.getElementById("canvas_map") as HTMLCanvasElement;
-    const resultCv = document.getElementById("canvas_result") as HTMLCanvasElement;
-
-    if (!sightCv) { return; }
-
-    const sight_ctx = sightCv.getContext("2d")!;
-    const map_ctx = mapCv.getContext("2d")!;
-    const result_ctx = resultCv.getContext("2d")!;
-
-    // draw a "map tile"
-    map_ctx.fillStyle = "grey";
-    map_ctx.fillRect(window.innerWidth / 2 - 200, window.innerHeight / 2 - 200, 400, 400);
-    map_ctx.fillStyle = "#442222";
-    map_ctx.fillRect(window.innerWidth / 2 - 150, window.innerHeight / 2 - 150, 300, 300);
-
-    // draw the "sight line"
-
-    sight_ctx.fillStyle = "yellow";
-    sight_ctx.strokeStyle = "1px solid yellow";
-    sight_ctx.beginPath();
-    sight_ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
-    sight_ctx.lineTo(200, 200);
-    sight_ctx.fill();
-    sight_ctx.lineTo(200, 400);
-    sight_ctx.fill();
-    sight_ctx.lineTo(window.innerWidth / 2, window.innerHeight / 2);
-    sight_ctx.arc(window.innerWidth / 2, window.innerHeight / 2, 100, 0, Math.PI * 2)
-    sight_ctx.fill();
-    sight_ctx.stroke();
-    //sight_ctx.fillRect(window.innerWidth / 2-100, window.innerHeight / 2-100, 200,200);
-
-    // create the result
-    result_ctx.drawImage(sightCv, 0, 0);
-    result_ctx.globalCompositeOperation = "source-in";
-    result_ctx.drawImage(mapCv, 0, 0);
-
-    // hide the other canvases
-
-    sightCv.style.display = "none";
-    mapCv.style.display = "none";
-
-
-    // END TEST
 }

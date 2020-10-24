@@ -3,11 +3,11 @@ import './App.css';
 import { GridTile } from './GridTile';
 import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from './tiles/Collision';
 import { FirstFloor, Index } from './tiles/Floor';
-import { sightDistance, UpdateFog } from './tiles/SightLines';
 import { GridPlayer, player } from './Player';
-import { GetItems, GridItem, Item } from './tiles/Items';
+import { GetItems, GridItem } from './tiles/Items';
 import { Interactions, SetInteractables } from './tiles/Interaction';
 import { Inventory } from './tiles/Inventory';
+import { DoSightLineThing } from './tiles/Rooms';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -15,7 +15,7 @@ export let centerY = 0;
 export var RenderApp = () => { };
 
 var showMap = false;
-var showFog = true; // turn off for now.. Sightlines would be cool, but circle looks dumb.
+var showFog = false; // turn off for now.. Sightlines would be cool, but circle looks dumb.
 const canvasStyle: React.CSSProperties = {
   position: "absolute",
   zIndex: 5,
@@ -60,15 +60,23 @@ function App() {
             filter: "blur(5px)",
           }} /> : null}
 
+        <canvas id="Canvas_SightResult"
+          width={window.innerWidth}
+          height={window.innerHeight}
+          style={{
+            ...canvasStyle,
+            zIndex: 6,
+          }} />
+
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
 
           {FirstFloor.tiles.map((tile) => <GridTile
-            overlayMode={showMap}
+            overlayMode={true}
             floor={FirstFloor}
             tile={tile}
             key={Index(tile.x, tile.y)}
-          />)}
-
+          />)} 
+          
           {GetItems().map((item) => <GridItem item={item} />)}
 
         </div>
@@ -201,9 +209,10 @@ function animate() {
     centerX = player.position.x;
     centerY = player.position.y;
   }
-
-  //TODO: later. 
-  showFog && UpdateFog(player, FirstFloor);
+  
+  DoSightLineThing(player, FirstFloor);
+//  DrawAllRooms(FirstFloor);
+  // BASIC fog, wont need latershowFog && UpdateFog(player, FirstFloor);
   RenderApp();
   requestAnimationFrame(() => animate());
 }

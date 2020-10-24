@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { centerY, centerX } from '../App';
 import { Coord, Copy } from "./Coord";
+import { toScreenSpot } from './SightLines';
 
 export interface Item {
     position: Coord;
@@ -98,6 +99,26 @@ const CantDropItem: PlayerItemInteraction = {
 
 
 type PlayerItemInteraction_Action = (player: Player, item: Item) => void;
+
+var drawnImages = new Map<string, HTMLImageElement>();
+
+export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D){
+    const box = ToBoundingBox(item);
+    const screenC = toScreenSpot(box); // weird cast but ok duck typing do your thing
+    if (item.image) {
+        let imageEL = drawnImages.get(item.image);
+        if(!imageEL){
+            imageEL = document.createElement("img") as HTMLImageElement;
+            imageEL.src=item.image;
+            drawnImages.set(item.image, imageEL);
+        }
+      ctx.drawImage(imageEL, screenC.x, screenC.y);
+    }
+    else {
+      ctx.fillStyle = item.color || "grey"; // grey..ish?
+      ctx.fillRect(screenC.x, screenC.y, box.width, box.height);
+    }
+}
 
 export function ToBoundingBox(item: Item) {
     return {

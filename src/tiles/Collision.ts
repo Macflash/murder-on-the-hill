@@ -2,12 +2,11 @@
 // ok how can we do... intersections and interactions?
 // #1 only can hit things in your room (or very rarely a neighboring room that is close by..)
 
-import { doorSize, wallSize } from "../GridTile";
-import { Coord, Distance, MidPoint, MoveCoord } from "./Coord";
+import { Coord, Distance, MoveCoord } from "./Coord";
 import { Direction } from "./Direction";
 import { Floor } from "./Floor";
 import { GetItems, Item, RectangleCollision } from "./Items";
-import { tileSize } from "./Size";
+import { doorSize, wallSize, tileSize } from "./Size";
 import { Tile } from "./Tile";
 
 /** The TILE the item is in. */
@@ -212,7 +211,7 @@ export function InelasticCollision(a: Item, b: Item) {
     b.position.y -= b.velocity.y * fudge;
 
     // and we want to PUSH them out so they are not colliding.
-    // How can we do that? Ideally we would like factor in the faces, but for laziness
+    // How can we do that? Ideally we would like factor in the faces,d but for laziness
     // we could just push opposite the direction?
     a.velocity.x = x;
     a.velocity.y = y;
@@ -223,7 +222,7 @@ export function InelasticCollision(a: Item, b: Item) {
 export const InteractionRange = 5;
 export function GetItemsInInteractionDistance(player: Item, items: Item[]) {
     return items.filter((item, i) => {
-        if (Distance(player.position, item.position) < InteractionRange + .25 * (item.width + item.height + player.width + player.height)) {
+        if (Distance(player.position, item.position) < InteractionRange + .4 * (item.width + item.height + player.width + player.height)) {
             // how do we want to handle multiple items?
             return true;
         }
