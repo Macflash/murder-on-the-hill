@@ -97,7 +97,6 @@ export class Tile {
     this.imageEl_.width = tileSize;
     this.imageEl_.height = tileSize;
     this.imageEl_.src = this.info.image;
-    this.imageEl_.style.transform = `rotate(${this.rotation * 90}deg)`;
   }
 
   drawToCanvas(ctx: CanvasRenderingContext2D, center: Coord) {
