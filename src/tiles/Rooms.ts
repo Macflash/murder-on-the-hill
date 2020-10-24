@@ -1,27 +1,64 @@
 import { purse, watch, table, CopyItem, curesedKnife, Item, itemZindex } from './Items';
 import { Tile } from './Tile';
-import Kitchen from "./../images/rooms/Kitchen.png";
+//import Kitchen from "./../images/rooms/Kitchen.png";
 import { Floor } from './Floor';
 import { centerX, centerY } from '../App';
 import { player } from '../Player';
 import { UpdateFogCanvas } from './SightLines';
+import dining_room from "./../images/rooms//BAD_COPIES/dining_room.jpg";
+import kitchen from "./../images/rooms//BAD_COPIES/kitchen.jpg";
+import storeroom from "./../images/rooms//BAD_COPIES/storeroom.jpg";
+import patio from "./../images/rooms//BAD_COPIES/patio.jpg";
+import entrance from "./../images/rooms//BAD_COPIES/entrance.jpg";
 
-export const FourWay = new Tile({ 
-  name: "Fourway",
-   doors: ["TOP", "LEFT", "RIGHT", "BOTTOM"],
-    //image: Kitchen,
-  });
+const Kitchen = new Tile({
+  name: "KITCHEN",
+  doors: ["TOP", "RIGHT"],
+  image: kitchen,
+});
+
+const Patio = new Tile({
+  name: "PATIO",
+  doors: ["TOP", "LEFT", "BOTTOM"],
+  image: patio,
+});
+
+const Storeroom = new Tile({
+  name: "STOREROOM",
+  doors: ["TOP"],
+  image: storeroom,
+});
+
+const DiningRoom = new Tile({
+  name: "DINING ROOM",
+  doors: ["TOP", "RIGHT"],
+  image: dining_room,
+});
+
+export const Entrance = new Tile({
+  name: "Entrance",
+  doors: ["TOP", "LEFT", "BOTTOM"],
+  image: entrance,
+});
+
+const FourWay = new Tile({
+  name: "Hallway",
+  doors: ["TOP", "LEFT", "RIGHT", "BOTTOM"],
+  //image: Kitchen,
+});
+
+
 FourWay.info.items = [CopyItem(table)];
-const TeeWay = new Tile({ name: "TeeWay", doors: ["TOP", "LEFT", "RIGHT"] });
+const TeeWay = new Tile({ name: "Hallway", doors: ["TOP", "LEFT", "RIGHT"] });
 const Straight = new Tile({ name: "Straight", doors: ["TOP", "BOTTOM"] });
 
 Straight.info.items = [CopyItem(purse)];
 
-const LTurn = new Tile({ name: "LTurn", doors: ["TOP", "RIGHT"] });
-const RTurn = new Tile({ name: "RTurn", doors: ["TOP", "LEFT"] });
+const LTurn = new Tile({ name: "Hallway", doors: ["TOP", "RIGHT"] });
+const RTurn = new Tile({ name: "Hallway", doors: ["TOP", "LEFT"] });
 RTurn.info.items = [CopyItem(curesedKnife)]; // THIS IS NOT HOW WE SHOULD DO IT. do this when FILLING THE TILE.
 
-const DeadEnd = new Tile({ name: "DeadEnd", doors: ["TOP"] });
+const DeadEnd = new Tile({ name: "Closet", doors: ["TOP"] });
 DeadEnd.info.items = [CopyItem(watch)]; // THIS IS NOT HOW WE SHOULD DO IT. do this when FILLING THE TILE.
 
 function AllWay(tile: Tile): Tile[] {
@@ -39,6 +76,10 @@ export const TileLibrary = [
   ...AllWay(LTurn),
   ...AllWay(RTurn),
   ...AllWay(DeadEnd),
+  ...AllWay(Kitchen),
+  ...AllWay(Storeroom),
+  ...AllWay(Patio),
+  ...AllWay(DiningRoom),
 ];
 
 function createCanvas(id: string) {
@@ -60,7 +101,7 @@ document.body.append(sightCanvas);
 var resultCanvas: HTMLCanvasElement;
 var resultCtx: CanvasRenderingContext2D;
 
-export function DoSightLineThing(player: Item, floor:Floor){
+export function DoSightLineThing(player: Item, floor: Floor) {
   DrawAllRooms(floor);
   DrawSightCanvas(player, floor);
   DrawResult();
@@ -73,12 +114,12 @@ export function DrawAllRooms(floor: Floor) {
   });
 }
 
-export function DrawSightCanvas(player: Item, floor: Floor){
+export function DrawSightCanvas(player: Item, floor: Floor) {
   UpdateFogCanvas(sightCtx, player, floor);
   sightCtx.filter = "blur(5px)";
 }
 
-export function DrawResult(){
+export function DrawResult() {
   if (!resultCanvas) {
     resultCanvas = document.getElementById("Canvas_SightResult") as HTMLCanvasElement;
     if (!resultCanvas) { return; }
@@ -94,7 +135,7 @@ export function DrawResult(){
   //resultCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   //resultCtx.fillStyle="white";
   //resultCtx.fillRect(0,0,window.innerWidth,window.innerHeight);
-  resultCtx.drawImage(sightCanvas,0,0);
+  resultCtx.drawImage(sightCanvas, 0, 0);
   resultCtx.globalCompositeOperation = "source-in";
-  resultCtx.drawImage(tileCanvas,0,0);
+  resultCtx.drawImage(tileCanvas, 0, 0);
 }

@@ -14,6 +14,10 @@ interface TileInfo {
   image?: string;
 
   items?: Item[]; // These positions are in relative roomX, roomY.
+
+  // is there only 1 copy or are there multiple? 
+  // SHOULD we just have a stack of rooms and pick from them and take them out when we use them??
+  copies?: boolean;
 }
 
 export class Tile {
@@ -93,16 +97,35 @@ export class Tile {
     this.imageEl_.width = tileSize;
     this.imageEl_.height = tileSize;
     this.imageEl_.src = this.info.image;
+    this.imageEl_.style.transform = `rotate(${this.rotation * 90}deg)`;
   }
 
   drawToCanvas(ctx: CanvasRenderingContext2D, center: Coord) {
     const topCorner = GetTileTopAndLeft(this.coord, center);
     if (this.image) {
-      ctx.drawImage(this.image, topCorner.x, topCorner.y);
+      // this doesn't handle ROTATION right. so we would need to create ANOTHER
+      // canvas with the image and THEN rotate it.
+      let im: HTMLImageElement | HTMLCanvasElement = this.image;
+      
+      /* OK, just need to... fix this some how... or have rotated image LOL.
+      if (this.rotation) {
+        const temp = document.createElement("canvas");
+        temp.width = tileSize;
+        temp.height = tileSize;
+        const tc = temp.getContext("2d")!;
+        tc.drawImage(this.image, 0, 0, tileSize, tileSize);
+        tc.translate(-.5 * tileSize, -.5 * tileSize);
+        console.log("ROTATIMG IMAGE!", this.rotation, Math.PI * this.rotation / 2);
+        tc.rotate(Math.PI * this.rotation / 4);
+        tc.translate(.5 * tileSize, .5 * tileSize);
+        im = temp;
+      }*/
+
+      ctx.drawImage(im, topCorner.x, topCorner.y, tileSize, tileSize);
     }
     else {
       ctx.fillStyle = "#663333"; // brown..ish?
-      ctx.fillRect(topCorner.x-1, topCorner.y-1, tileSize+2, tileSize+2);
+      ctx.fillRect(topCorner.x - 1, topCorner.y - 1, tileSize + 2, tileSize + 2);
     }
   }
 }

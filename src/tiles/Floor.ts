@@ -1,7 +1,7 @@
 import { Add, Coord, MoveCoord, Multiply } from './Coord';
 import { Direction, AllDirections, Opposite } from './Direction';
 import { Tile } from './Tile';
-import { TileLibrary, FourWay } from './Rooms';
+import { Entrance, TileLibrary } from './Rooms';
 import { tileSize } from './Size';
 
 export function IndexCoord(c: Coord) { return Index(c.x, c.y); }
@@ -90,4 +90,4 @@ export class Floor {
 }
 
 export const FirstFloor = new Floor("Main Floor");
-FirstFloor.setTile(FourWay.copy(), 0, 0);
+FirstFloor.setTile(Entrance.copy(), 0, 0);
