@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Coord, Copy } from "../coordinates/Coord";
 import { toScreenSpot } from '../hud/SightLines';
+import { Stats } from './Stats';
 
 export interface Item {
     position: Coord;
@@ -28,19 +29,19 @@ export interface Item {
 }
 
 // TODO: actually do this stuff and like track some basic stats
-export interface Player extends Item {
+export interface StatEntity extends Item {
     /**
      * Items you are carrying.
      * IDK do we need some kind of ACTIVE vs CARRIED distinction for some items,
      * like you can't have 4 weapons at the same time
      */
     inventory: Item[];
-    health: number;
-    fear: number;
-    strength: number; // force when moving, affects carry strength
-    speed: number;
-    intelligence: number;
-    spirit: number; // like religion, spiritual strength. e/g/ won't be scared from weird shit dude.
+    stats: Stats;
+}
+
+export interface Player extends StatEntity {
+    // Right now there is nothing special.
+    // Later we will probably add things like.. connection and voice and stuff
 }
 
 interface PlayerItemInteraction {

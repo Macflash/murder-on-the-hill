@@ -21,19 +21,15 @@ export class Floor {
   setCoord(tile: Tile, c: Coord) { this.setTile(tile, c.x, c.y); }
   setTile(tile: Tile, x: number, y: number) {
     if (this.hasTile(x, y)) {
-      alert("Already had a tile there!");
-      throw "already had a tile!";
+      throw new Error(`Tried placing a tile where there already was one! ${x}. ${y}: ${tile.info.name}, existing tile was ${this.getTile(x,y)?.info.name}`);
     }
 
     tile.x = x;
     tile.y = y;
     
-    const tileCenter = Multiply(Add(tile.coord, { x: 0, y: 0 }), tileSize);
-    console.log("tile center!", tileCenter);
-    tile.info.items?.forEach(item =>{
-    console.log("item " + item.name, item.position);
-    item.position = Add(item.position, tileCenter);
-    console.log("new position " + item.name, item.position);
+      const tileCenter = Multiply(Add(tile.coord, { x: 0, y: 0 }), tileSize);
+      tile.info.items?.forEach(item =>{
+      item.position = Add(item.position, tileCenter);
     });
 
     this.grid.set(Index(x, y), tile);

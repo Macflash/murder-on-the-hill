@@ -42,7 +42,6 @@ export const Entrance = new Tile({
 const FourWay = new Tile({
   name: "Hallway",
   doors: ["TOP", "LEFT", "RIGHT", "BOTTOM"],
-  //image: Kitchen,
 });
 
 
