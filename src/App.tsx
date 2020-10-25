@@ -1,13 +1,13 @@
 import React from 'react';
 import './App.css';
-import { GridTile } from './GridTile';
-import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from './tiles/Collision';
-import { FirstFloor, Index } from './tiles/Floor';
-import { GridPlayer, player } from './Player';
-import { GetItems, GridItem } from './tiles/Items';
-import { Interactions, SetInteractables } from './tiles/Interaction';
-import { Inventory } from './tiles/Inventory';
-import { DoSightLineThing } from './tiles/Rooms';
+import { GridTile } from './game/tiles/GridTile';
+import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from './game/items/Collision';
+import { FirstFloor, Index } from './game/tiles/Floor';
+import { GridPlayer, player } from './game/items/Player';
+import { GetItems, GridItem } from './game/items/Items';
+import { Interactions, SetInteractables } from './game/items/Interaction';
+import { Inventory } from './game/hud/Inventory';
+import { DoSightLineThing } from './game/tiles/Rooms';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -34,7 +34,7 @@ function App() {
   }, [setState]);
 
   React.useEffect(() => { RenderApp = rerender; }, [rerender]);
-
+  const center = { x: centerX, y: centerY };
   return (
     <div className="App" style={{ overflow: "hidden" }}>
       {showMap ?
@@ -46,7 +46,7 @@ function App() {
           <button onClick={() => { centerX += 100; rerender(); }}>RIGHT!</button>
           <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>CENTER!</button>
         </div> : null}
-      <GridPlayer />
+      <GridPlayer center={center} />
 
       <div>
 
@@ -71,13 +71,15 @@ function App() {
         <div id="gamefloor" style={{ mixBlendMode: "normal" }}>
 
           {FirstFloor.tiles.map((tile) => <GridTile
+            RenderApp={rerender}
+            center={center}
             overlayMode={true}
             floor={FirstFloor}
             tile={tile}
             key={Index(tile.x, tile.y)}
-          />)} 
-          
-          {GetItems().map((item) => <GridItem item={item} />)}
+          />)}
+
+          {GetItems().map((item) => <GridItem item={item} center={center} />)}
 
         </div>
       </div>
@@ -198,7 +200,7 @@ function animate() {
       ]
     )
   );
-  
+
   CollideItems([
     player,
     ...(roomItems?.filter(item => item.moveable || item.blockObjects) || [])
@@ -209,9 +211,11 @@ function animate() {
     centerX = player.position.x;
     centerY = player.position.y;
   }
-  
-  DoSightLineThing(player, FirstFloor);
-//  DrawAllRooms(FirstFloor);
+
+  const center = { x: centerX, y: centerY };
+
+  DoSightLineThing(player, FirstFloor, center);
+  //  DrawAllRooms(FirstFloor);
   // BASIC fog, wont need latershowFog && UpdateFog(player, FirstFloor);
   RenderApp();
   requestAnimationFrame(() => animate());

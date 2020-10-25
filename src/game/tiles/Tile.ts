@@ -1,9 +1,8 @@
-import { centerX, centerY } from '../App';
-import { GetTileTopAndLeft } from '../GridTile';
-import { Coord, MoveCoord } from './Coord';
-import { Direction, Rotate } from './Direction';
+import { GetTileTopAndLeft } from './GridTile';
+import { Coord, MoveCoord } from '../coordinates/Coord';
+import { Direction, Rotate } from '../coordinates/Direction';
 import { Floor } from './Floor';
-import { Item, CopyItem } from './Items';
+import { Item, CopyItem } from '../items/Items';
 import { tileSize } from './Size';
 
 interface TileInfo {
@@ -101,6 +100,7 @@ export class Tile {
 
   drawToCanvas(ctx: CanvasRenderingContext2D, center: Coord) {
     const topCorner = GetTileTopAndLeft(this.coord, center);
+    /*
     if (this.image) {
       // this doesn't handle ROTATION right. so we would need to create ANOTHER
       // canvas with the image and THEN rotate it.
@@ -118,13 +118,13 @@ export class Tile {
         tc.rotate(Math.PI * this.rotation / 4);
         tc.translate(.5 * tileSize, .5 * tileSize);
         im = temp;
-      }*/
+      }
 
       ctx.drawImage(im, topCorner.x, topCorner.y, tileSize, tileSize);
     }
-    else {
+    else { */
       ctx.fillStyle = "#663333"; // brown..ish?
       ctx.fillRect(topCorner.x - 1, topCorner.y - 1, tileSize + 2, tileSize + 2);
-    }
+    //}
   }
 }

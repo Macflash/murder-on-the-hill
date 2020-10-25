@@ -1,6 +1,7 @@
 import React from 'react';
-import { GridItem, Item, Player } from "./tiles/Items";
-import kid_green from "./images/players/kid_green.png";
+import { GridItem, Player } from "./Items";
+import kid_green from "./../../images/players/kid_green.png";
+import { Coord } from '../coordinates/Coord';
 
 export const player: Player = {
   // item stuff
@@ -15,7 +16,7 @@ export const player: Player = {
 
   blockObjects: true,
   moveable: true, // Is this really smart??
-  
+
   //player stuff
   fear: 0,
   health: 100,
@@ -29,6 +30,6 @@ export const player: Player = {
 
 export const playerZindex = 51;
 
-export function GridPlayer() {
-  return <GridItem item={player} zIndex={playerZindex} />
+export function GridPlayer(props: { center: Coord }) {
+  return <GridItem item={player} zIndex={playerZindex} center={props.center} />
 }

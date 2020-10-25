@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { InteractionButtons, MenuStyle } from './Interaction';
-import { Player } from "./Items";
+import { InteractionButtons, MenuStyle } from '../items/Interaction';
+import { Player } from "../items/Items";
 
 // want it like.. by the player?
 export function Inventory(props: { player: Player }) {

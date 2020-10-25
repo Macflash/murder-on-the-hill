@@ -1,15 +1,13 @@
-import { purse, watch, table, CopyItem, curesedKnife, Item, itemZindex } from './Items';
+import { purse, watch, table, CopyItem, curesedKnife, Item } from '../items/Items';
 import { Tile } from './Tile';
-//import Kitchen from "./../images/rooms/Kitchen.png";
 import { Floor } from './Floor';
-import { centerX, centerY } from '../App';
-import { player } from '../Player';
-import { UpdateFogCanvas } from './SightLines';
-import dining_room from "./../images/rooms//BAD_COPIES/dining_room.jpg";
-import kitchen from "./../images/rooms//BAD_COPIES/kitchen.jpg";
-import storeroom from "./../images/rooms//BAD_COPIES/storeroom.jpg";
-import patio from "./../images/rooms//BAD_COPIES/patio.jpg";
-import entrance from "./../images/rooms//BAD_COPIES/entrance.jpg";
+import { UpdateFogCanvas } from '../hud/SightLines';
+import { Coord } from '../coordinates/Coord';
+import dining_room from "./../../images/rooms/BAD_COPIES/dining_room.jpg";
+import kitchen from "./../../images/rooms/BAD_COPIES/kitchen.jpg";
+import storeroom from "./../../images/rooms/BAD_COPIES/storeroom.jpg";
+import patio from "./../../images/rooms/BAD_COPIES/patio.jpg";
+import entrance from "./../../images/rooms/BAD_COPIES/entrance.jpg";
 
 const Kitchen = new Tile({
   name: "KITCHEN",
@@ -101,16 +99,16 @@ document.body.append(sightCanvas);
 var resultCanvas: HTMLCanvasElement;
 var resultCtx: CanvasRenderingContext2D;
 
-export function DoSightLineThing(player: Item, floor: Floor) {
-  DrawAllRooms(floor);
+export function DoSightLineThing(player: Item, floor: Floor, center: Coord) {
+  DrawAllRooms(floor, center);
   DrawSightCanvas(player, floor);
   DrawResult();
 }
 
-export function DrawAllRooms(floor: Floor) {
+export function DrawAllRooms(floor: Floor, center: Coord) {
   tileCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   floor.tiles.forEach(tile => {
-    tile.drawToCanvas(tileCtx, { x: centerX, y: centerY });
+    tile.drawToCanvas(tileCtx, center);
   });
 }
 

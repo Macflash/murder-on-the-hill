@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Coord } from './Coord';
+import { Coord } from '../coordinates/Coord';
 import { GridItem, Item, Player } from "./Items";
-import { toScreenSpot } from './SightLines';
+import { toScreenSpot } from '../hud/SightLines';
 
 var interactables: Item[] = [];
 
@@ -55,9 +55,8 @@ export function Interactions(props: { player: Player }) {
     const { player } = props;
     if (interactables.length <= 0) { return null; }
 
-
     return <>
-        {interactables.map(item =>
+        {interactables.filter(i => i.name || i.playerInteractions?.length).map(item =>
             <div style={{
                 ...MenuStyle,
                 zIndex: 100,

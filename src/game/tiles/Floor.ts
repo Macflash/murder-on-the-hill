@@ -1,5 +1,5 @@
-import { Add, Coord, MoveCoord, Multiply } from './Coord';
-import { Direction, AllDirections, Opposite } from './Direction';
+import { Add, Coord, MoveCoord, Multiply } from '../coordinates/Coord';
+import { Direction, AllDirections, Opposite } from '../coordinates/Direction';
 import { Tile } from './Tile';
 import { Entrance, TileLibrary } from './Rooms';
 import { tileSize } from './Size';

@@ -1,9 +1,9 @@
-import { centerX, centerY } from "../App";
-import { tileSize, wallSize } from "./Size";
-import { CollideWithWalls } from "./Collision";
-import { Coord } from "./Coord";
-import { Floor } from "./Floor";
-import { Item } from "./Items";
+import { centerX, centerY } from "../../App";
+import { tileSize, wallSize } from "../tiles/Size";
+import { CollideWithWalls } from "../items/Collision";
+import { Coord } from "../coordinates/Coord";
+import { Floor } from "../tiles/Floor";
+import { Item } from "../items/Items";
 
 // As long as we factor in their size as well...
 export const sightDistance = 400;

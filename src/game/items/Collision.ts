@@ -2,12 +2,12 @@
 // ok how can we do... intersections and interactions?
 // #1 only can hit things in your room (or very rarely a neighboring room that is close by..)
 
-import { Coord, Distance, MoveCoord } from "./Coord";
-import { Direction } from "./Direction";
-import { Floor } from "./Floor";
+import { Coord, Distance, MoveCoord } from "../coordinates/Coord";
+import { Direction } from "../coordinates/Direction";
+import { Floor } from "../tiles/Floor";
 import { GetItems, Item, RectangleCollision } from "./Items";
-import { doorSize, wallSize, tileSize } from "./Size";
-import { Tile } from "./Tile";
+import { doorSize, wallSize, tileSize } from "../tiles/Size";
+import { Tile } from "../tiles/Tile";
 
 /** The TILE the item is in. */
 export function GetTileCoord(c: Coord): Coord {
@@ -59,8 +59,6 @@ export function CreateRoomIfNeeded(floor: Floor | undefined, coord: Coord, direc
     }
 }
 
-const openDoorExtraSize = 10;
-
 export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false): boolean {
     const hT = .5 * tileSize;
     const hW = .5 * item.width;
@@ -82,6 +80,7 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
 
     const tile = floor?.getCoord(tileCoord);
 
+    let collisionTrue = false;
     // If you are inside the wall boundary
     if (roomX <= leftWall) {
         // AND you are outside of the door area (or there is no door):
@@ -103,7 +102,7 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
 
             item.position.x += leftWall - roomX;
             item.velocity.x = 0;
-            return true;
+            collisionTrue = true;
         }
     }
     if (roomX >= rightWall) {
@@ -124,7 +123,7 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
 
             item.position.x += rightWall - roomX;
             item.velocity.x = 0;
-            return true;
+            collisionTrue = true;
         }
     }
     if (roomY <= topWall) {
@@ -145,7 +144,7 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
 
             item.position.y += topWall - roomY;
             item.velocity.y = 0;
-            return true;
+            collisionTrue = true;
         }
     }
     if (roomY >= bottomWall) {
@@ -166,14 +165,23 @@ export function CollideWithWalls(item: Item, floor?: Floor, createOnDoor = false
 
             item.position.y += bottomWall - roomY;
             item.velocity.y = 0;
-            return true;
+            collisionTrue = true;
         }
     }
 
-    return false;
+    return collisionTrue;
 }
 
-function hasDoorAndOpenIfNeeded_New(direction: Direction, tile: Tile | undefined, roomY: number, hDY: number, hH: number, createOnDoor: boolean, floor: Floor | undefined) {
+// TODO: auto refactor gave these variables TRASH names.
+function hasDoorAndOpenIfNeeded_New(
+    direction: Direction,
+    tile: Tile | undefined,
+    roomY: number,
+    hDY: number,
+    hH: number,
+    createOnDoor: boolean,
+    floor: Floor | undefined,
+) {
     const hasDoor = HasDoor(tile, direction);
     if (Math.abs(roomY) <= (hDY + hH + 5) && hasDoor && createOnDoor) {
         CreateRoomIfNeeded(floor, tile!, direction);
@@ -197,13 +205,13 @@ export function ApplyFriction(players: Item[]) {
     });
 }
 
+// TODO: this doesn't actually separate the items...
 export function InelasticCollision(a: Item, b: Item) {
     // final velocity
     const x = (a.mass * a.velocity.x + b.mass * b.velocity.x) / (a.mass + b.mass);
     const y = (a.mass * a.velocity.y + b.mass * b.velocity.y) / (a.mass + b.mass);
 
     // step back their velocities a bit??
-
     const fudge = .2;
     a.position.x -= a.velocity.x * fudge;
     a.position.y -= a.velocity.y * fudge;
@@ -232,17 +240,10 @@ export function GetItemsInInteractionDistance(player: Item, items: Item[]) {
 }
 
 function UnmoveableCollision(moveable: Item, unmoveable: Item) {
-    // step BACKWARDS on the moveable item VELOCITY?
-    if (moveable.velocity.x === 0 && moveable.velocity.y === 0) {
-        // this is bad but moving you arbitrarily could be worse!! Don't want to go through walls or some crap
-        //    console.error("if you aren't moving you shouldn't have hit an item!!");
-        //   return;
-    }
-
     const overlapX = .5 * (moveable.width + unmoveable.width) - Math.abs(moveable.position.x - unmoveable.position.x);
     const overlapY = .5 * (moveable.height + unmoveable.height) - Math.abs(moveable.position.y - unmoveable.position.y);
 
-    // do the smallest overlap to get back to normal?
+    // Use whichever overlap is smalelr inorder to resolve the collision.
     if (overlapX <= overlapY) {
         // just do that one!
         if (moveable.position.x < unmoveable.position.x) {
@@ -265,30 +266,6 @@ function UnmoveableCollision(moveable: Item, unmoveable: Item) {
             moveable.velocity.y = overlapY;
         }
     }
-
-    console.log("overlap", overlapX, overlapY);
-
-    // shoot this doesn't figure out WHICH one it should do...
-    console.log(`${moveable.name} hit an unmoveable ${unmoveable.name}`);
-    /*
-    This is ok for 1D, but shoots people over walls in 2D....
-    // treat this just like a WALL!
-    if (moveable.position.x > unmoveable.position.x) {
-        moveable.position.x = unmoveable.position.x + .5 * (moveable.width + unmoveable.width);
-        //moveable.velocity.x = 0;
-    }
-    if (moveable.position.x <= unmoveable.position.x) {
-        moveable.position.x = unmoveable.position.x - .5 * (moveable.width + unmoveable.width);
-        //moveable.velocity.x = 0;
-    }
-    if (moveable.position.y > unmoveable.position.y) {
-        moveable.position.y = unmoveable.position.y + .5 * (moveable.height + unmoveable.height);
-        //moveable.velocity.y = 0;
-    }
-    if (moveable.position.y <= unmoveable.position.y) {
-        moveable.position.y = unmoveable.position.y - .5 * (moveable.height + unmoveable.height);
-        //moveable.velocity.y = 0;
-    } */
 }
 
 let max_objects_collided = 0;
