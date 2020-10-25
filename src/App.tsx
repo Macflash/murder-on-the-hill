@@ -5,9 +5,10 @@ import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDis
 import { FirstFloor, Index } from './game/tiles/Floor';
 import { GridPlayer, player } from './game/items/Player';
 import { GetItems, GridItem } from './game/items/Items';
-import { Interactions, SetInteractables } from './game/items/Interaction';
+import { Interactions, SetInteractables } from './game/hud/Hud_Interaction';
 import { Inventory } from './game/hud/Inventory';
 import { DoSightLineThing } from './game/tiles/Rooms';
+import { HudStats } from './game/hud/Hud_Stats';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -86,6 +87,7 @@ function App() {
 
       <Interactions player={player} />
       <Inventory player={player} />
+      <HudStats player={player} />
 
     </div>
   );

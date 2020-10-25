@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Coord } from '../coordinates/Coord';
-import { GridItem, Item, Player } from "./Items";
-import { toScreenSpot } from '../hud/SightLines';
+import { GridItem, Item, Player } from "../items/Items";
+import { toScreenSpot } from './SightLines';
+import { MenuStyle } from './MenuStyle';
 
 var interactables: Item[] = [];
 
@@ -23,14 +24,6 @@ export function toScreenPositionStyle(c: Coord): React.CSSProperties {
         left: spot.x,
         position: "absolute",
     }
-}
-
-export const MenuStyle: React.CSSProperties = {
-    position: "absolute",
-    border: "2px solid white",
-    backgroundColor: "#442211",
-    padding: 5,
-    color: "white",
 }
 
 export function InteractionButtons({ item, player, inInventory = false, onGround = false }:

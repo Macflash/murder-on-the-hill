@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { InteractionButtons, MenuStyle } from '../items/Interaction';
+import { InteractionButtons } from './Hud_Interaction';
+import { MenuStyle } from "./MenuStyle";
 import { Player } from "../items/Items";
 
 // want it like.. by the player?
