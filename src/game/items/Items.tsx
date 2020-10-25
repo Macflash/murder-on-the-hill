@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Coord } from "../coordinates/Coord";
+import { Add, Coord, Subtract } from "../coordinates/Coord";
 import { toScreenSpot } from '../hud/SightLines';
 import { PlayerItemInteraction, PickUpItem, DisplayItemInfo, CantDropItem, DropItem } from './Interaction';
 
@@ -30,7 +30,7 @@ export interface Item {
 
 var drawnImages = new Map<string, HTMLImageElement>();
 
-export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D) {
+export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D, center: Coord) {
     const box = ToBoundingBox(item);
     const screenC = toScreenSpot(box); // weird cast but ok duck typing do your thing
     if (item.image) {
@@ -43,6 +43,7 @@ export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D) {
         ctx.drawImage(imageEL, screenC.x, screenC.y);
     }
     else {
+        console.log(`item ${screenC.x},${screenC.y}`)
         ctx.fillStyle = item.color || "grey"; // grey..ish?
         ctx.fillRect(screenC.x, screenC.y, box.width, box.height);
     }
@@ -80,9 +81,8 @@ export function GetItems() {
 
 export const itemZindex = 50;
 
-
-export function GridItem(props: { item: Item, zIndex?: number, tileOffset?: Coord, center: Coord }) {
-    const { item, tileOffset, center, zIndex } = props;
+export function GridItem(props: { item: Item, zIndex?: number,center: Coord }) {
+    const { item, center, zIndex } = props;
     const hW = item.width * .5;
     const hH = item.height * .5;
 
@@ -94,11 +94,20 @@ export function GridItem(props: { item: Item, zIndex?: number, tileOffset?: Coor
             height: item.height,
             width: item.width,
             backgroundColor: item.image ? undefined : item.color || "grey",
-            left: item.position.x - center.x + (.5 * window.innerWidth) - hW - (tileOffset?.x || 0),
-            top: item.position.y - center.y + (.5 * window.innerHeight) - hH - (tileOffset?.y || 0),
+            left: item.position.x - center.x + (.5 * window.innerWidth) - hW,
+            top: item.position.y - center.y + (.5 * window.innerHeight) - hH,
         }}>
         {item.image ? <img src={item.image} style={{ transform: item.imageTransform }} /> : null}
     </div>;
+}
+
+const imageEls = new Map<string, HTMLImageElement>();
+export function GetImageElement(image: string): HTMLImageElement {
+    if (imageEls.has(image)) { return imageEls.get(image)!; }
+    const newImage = document.createElement("img");
+    newImage.src = image;
+    imageEls.set(image, newImage);
+    return newImage;
 }
 
 export const curesedKnife: Item = {

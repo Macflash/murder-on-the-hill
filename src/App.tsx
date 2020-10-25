@@ -81,7 +81,9 @@ function App() {
             key={Index(tile.x, tile.y)}
           />)}
 
-          {GetItems().map((item) => <GridItem item={item} center={center} />)}
+          {
+          //GetItems().map((item) => <GridItem item={item} center={center} />)
+          }
 
         </div>
       </div>
@@ -195,7 +197,7 @@ function animate() {
       // do rolls and stuff!
       const playerRoll = attackingPlayer.stats.roll(monster.attackType);
       const monsterRoll = monster.stats.roll(monster.attackType);
-      console.log(`Monster did ${monsterRoll - playerRoll} damage!`);
+      //console.log(`Monster did ${monsterRoll - playerRoll} damage!`);
     }
   })
 

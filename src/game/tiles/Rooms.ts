@@ -1,4 +1,4 @@
-import { purse, watch, table, CopyItem, curesedKnife, Item } from '../items/Items';
+import { purse, watch, table, CopyItem, curesedKnife, Item, GetItems, DrawItemToCtx } from '../items/Items';
 import { Tile } from './Tile';
 import { Floor } from './Floor';
 import { UpdateFogCanvas } from '../hud/SightLines';
@@ -8,7 +8,6 @@ import kitchen from "./../../images/rooms/BAD_COPIES/kitchen.jpg";
 import storeroom from "./../../images/rooms/BAD_COPIES/storeroom.jpg";
 import patio from "./../../images/rooms/BAD_COPIES/patio.jpg";
 import entrance from "./../../images/rooms/BAD_COPIES/entrance.jpg";
-import { BasicMonster } from '../items/Monsters';
 
 const Kitchen = new Tile({
   name: "KITCHEN",
@@ -108,6 +107,7 @@ var resultCtx: CanvasRenderingContext2D;
 
 export function DoSightLineThing(player: Item, floor: Floor, center: Coord) {
   DrawAllRooms(floor, center);
+  DrawAllItems(center); // this is wrong somehow
   DrawSightCanvas(player, floor);
   DrawResult();
 }
@@ -116,6 +116,12 @@ export function DrawAllRooms(floor: Floor, center: Coord) {
   tileCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   floor.tiles.forEach(tile => {
     tile.drawToCanvas(tileCtx, center);
+  });
+}
+
+export function DrawAllItems(center: Coord) {
+  GetItems().forEach(item => {
+    DrawItemToCtx(item ,tileCtx, center);
   });
 }
 
