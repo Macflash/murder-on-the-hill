@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css",
-    "main.js": "/murder-on-the-hill/static/js/main.61ee9ea9.chunk.js",
-    "main.js.map": "/murder-on-the-hill/static/js/main.61ee9ea9.chunk.js.map",
+    "main.js": "/murder-on-the-hill/static/js/main.3da4234e.chunk.js",
+    "main.js.map": "/murder-on-the-hill/static/js/main.3da4234e.chunk.js.map",
     "runtime-main.js": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js",
     "runtime-main.js.map": "/murder-on-the-hill/static/js/runtime-main.0ef4b842.js.map",
-    "static/js/2.63e4f214.chunk.js": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js",
-    "static/js/2.63e4f214.chunk.js.map": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js.map",
+    "static/js/2.2e8ee996.chunk.js": "/murder-on-the-hill/static/js/2.2e8ee996.chunk.js",
+    "static/js/2.2e8ee996.chunk.js.map": "/murder-on-the-hill/static/js/2.2e8ee996.chunk.js.map",
     "index.html": "/murder-on-the-hill/index.html",
-    "precache-manifest.f1075fa82efa48358e5bc7caa4fde65d.js": "/murder-on-the-hill/precache-manifest.f1075fa82efa48358e5bc7caa4fde65d.js",
+    "precache-manifest.3c92b8ce0a512a71a9d9634c15abee63.js": "/murder-on-the-hill/precache-manifest.3c92b8ce0a512a71a9d9634c15abee63.js",
     "service-worker.js": "/murder-on-the-hill/service-worker.js",
     "static/css/main.2cf0a9eb.chunk.css.map": "/murder-on-the-hill/static/css/main.2cf0a9eb.chunk.css.map",
-    "static/js/2.63e4f214.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.63e4f214.chunk.js.LICENSE.txt",
+    "static/js/2.2e8ee996.chunk.js.LICENSE.txt": "/murder-on-the-hill/static/js/2.2e8ee996.chunk.js.LICENSE.txt",
     "static/media/dining_room.jpg": "/murder-on-the-hill/static/media/dining_room.726d2984.jpg",
     "static/media/entrance.jpg": "/murder-on-the-hill/static/media/entrance.b171268f.jpg",
     "static/media/kitchen.jpg": "/murder-on-the-hill/static/media/kitchen.46ae08a3.jpg",
@@ -20,8 +20,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.0ef4b842.js",
-    "static/js/2.63e4f214.chunk.js",
+    "static/js/2.2e8ee996.chunk.js",
     "static/css/main.2cf0a9eb.chunk.css",
-    "static/js/main.61ee9ea9.chunk.js"
+    "static/js/main.3da4234e.chunk.js"
   ]
 }

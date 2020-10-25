@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/murder-on-the-hill/precache-manifest.f1075fa82efa48358e5bc7caa4fde65d.js"
+  "/murder-on-the-hill/precache-manifest.3c92b8ce0a512a71a9d9634c15abee63.js"
 );
 
 self.addEventListener('message', (event) => {
