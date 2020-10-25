@@ -68,7 +68,7 @@ export class Tile {
   copy(r?: number) {
     const t = new Tile({
       ...this.info,
-      items: this.info.items?.map(item => CopyItem(item)),
+      items: this.info.items?.map(item => CopyItem(item)), // this breaks monsters :(
     });
     if (r) {
       t.rotate(r);

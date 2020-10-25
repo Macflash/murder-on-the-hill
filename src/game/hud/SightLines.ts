@@ -14,17 +14,6 @@ function GetTileViewDist(){
 
 var viewDist = GetTileViewDist();
 
-/*
-var fog: HTMLCanvasElement;
-var ctx: CanvasRenderingContext2D;
-window.addEventListener('resize', () => {
-    if(!fog){ return; }
-    fog.width = window.innerWidth;
-    fog.height = window.innerHeight;
-    //UpdateFog();
-});
-*/
-
 /** Returns where this hits a wall! */
 const rayStep = wallSize;
 var rayLength = 10 + viewDist * tileSize / rayStep; //was like 75 or 100;
@@ -70,20 +59,6 @@ export function toScreenSpot(c: Coord): Coord {
         y: c.y - centerY + (.5 * window.innerHeight),
     }
 }
-
-/*
-export function UpdateFog(player: Item, floor: Floor) {
-    if (!ctx) {
-        fog = document.getElementById("fog") as HTMLCanvasElement;
-        if (!fog) { return; }
-        fog.width = window.innerWidth;
-        fog.height = window.innerHeight;
-
-        ctx = fog.getContext("2d")!;
-        if (!ctx) { return; }
-    }
-    UpdateFogCanvas(ctx, player, floor);
-}*/
 
 export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, floor: Floor) {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);

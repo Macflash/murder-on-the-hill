@@ -1,8 +1,13 @@
 import React from 'react';
-import { GridItem, Player } from "./Items";
+import { GridItem } from "./Items";
 import kid_green from "./../../images/players/kid_green.png";
 import { Coord } from '../coordinates/Coord';
-import { PlayerStats } from './Stats';
+import { Creature, PlayerStats } from './Stats';
+
+export interface Player extends Creature {
+  // Right now there is nothing special.
+  // Later we will probably add things like.. connection and voice and stuff
+}
 
 export const player: Player = {
   // item stuff

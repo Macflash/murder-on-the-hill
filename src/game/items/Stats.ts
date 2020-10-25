@@ -1,9 +1,21 @@
+import { Item } from "./Items";
+
 export type StatType =
     "strength" |
     "dexterity" |
     "intellect" |
     "spirit" |
     "fear";
+
+export interface Creature extends Item {
+    /**
+     * Items you are carrying.
+     * IDK do we need some kind of ACTIVE vs CARRIED distinction for some items,
+     * like you can't have 4 weapons at the same time
+     */
+    inventory: Item[];
+    stats: Stats;
+}
 
 /** Pyramid style distribution from 0 - 2  */
 export function Gaussish(){
@@ -45,18 +57,22 @@ export class PlayerStats implements Stats {
         this.holder.set("spirit", spt);
         this.holder.set("fear", 0);
     }
+
     get(stat: StatType): number {
         // All stats are always populated
         return this.holder.get(stat)!;
     }
+
     roll(stat: StatType): number {
         // Roll for the stat. N2 Gaussish provides a roughly normal distribution at higher numbers
         // strangely this always will do whole numbers, so partials are ignored
         return N2Gaussish(this.get(stat));
     }
+
     buff(stat: StatType, buff: number): number {
         throw new Error("Method not implemented.");
     }
+    
     damage(stat: StatType, damage: number): number {
         throw new Error("Method not implemented.");
     }

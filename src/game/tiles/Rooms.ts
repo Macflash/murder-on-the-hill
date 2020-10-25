@@ -8,6 +8,7 @@ import kitchen from "./../../images/rooms/BAD_COPIES/kitchen.jpg";
 import storeroom from "./../../images/rooms/BAD_COPIES/storeroom.jpg";
 import patio from "./../../images/rooms/BAD_COPIES/patio.jpg";
 import entrance from "./../../images/rooms/BAD_COPIES/entrance.jpg";
+import { BasicMonster } from '../items/Monsters';
 
 const Kitchen = new Tile({
   name: "KITCHEN",
@@ -52,6 +53,8 @@ const Straight = new Tile({ name: "Straight", doors: ["TOP", "BOTTOM"] });
 Straight.info.items = [CopyItem(purse)];
 
 const LTurn = new Tile({ name: "Hallway", doors: ["TOP", "RIGHT"] });
+//LTurn.info.items = [new BasicMonster()]; // THIS IS NOT HOW WE SHOULD DO IT. do this when FILLING THE TILE.
+
 const RTurn = new Tile({ name: "Hallway", doors: ["TOP", "LEFT"] });
 RTurn.info.items = [CopyItem(curesedKnife)]; // THIS IS NOT HOW WE SHOULD DO IT. do this when FILLING THE TILE.
 
@@ -84,6 +87,11 @@ function createCanvas(id: string) {
   canvas.id = "Canvas_FloorAndItems";
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  document.addEventListener('resize', ()=>{
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+  })
 
   return {
     canvas,

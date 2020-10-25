@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Coord } from '../coordinates/Coord';
-import { GridItem, Item, Player } from "../items/Items";
+import { Item } from "../items/Items";
 import { toScreenSpot } from './SightLines';
 import { MenuStyle } from './MenuStyle';
+import { Player } from '../items/Player';
 
 var interactables: Item[] = [];
 

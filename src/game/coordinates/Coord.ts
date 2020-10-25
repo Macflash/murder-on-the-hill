@@ -27,7 +27,7 @@ export function MidPoint(a: Coord, b: Coord) {
   };
 }
 
-
+// Basic vector ops
 export function Copy(a: Coord) {
   return {
     x: (a.x),
@@ -42,11 +42,34 @@ export function Add(a: Coord, b: Coord) {
   };
 }
 
+export function Subtract(a: Coord, b: Coord) {
+  return {
+    x: (a.x - b.x),
+    y: (a.y - b.y),
+  };
+}
+
 export function Multiply(a: Coord, b: number) {
   return {
     x: (a.x * b),
     y: (a.y * b),
   };
+}
+
+export function Divide(a: Coord, b: number) {
+  return {
+    x: (a.x / b),
+    y: (a.y / b),
+  };
+}
+
+// Vector direction and scaling ops
+export function Magnitude(a: Coord) {
+  return Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
+}
+
+export function MakeUnitVector(a: Coord) {
+  return Divide(a, Magnitude(a));
 }
 
 // Distances ordered by their stupidness

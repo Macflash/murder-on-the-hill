@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { InteractionButtons } from './Hud_Interaction';
 import { MenuStyle } from "./MenuStyle";
-import { Player } from "../items/Items";
+import { Player } from "../items/Player";
 
 // want it like.. by the player?
 export function Inventory(props: { player: Player }) {

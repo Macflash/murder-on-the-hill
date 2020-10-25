@@ -9,6 +9,7 @@ import { Interactions, SetInteractables } from './game/hud/Hud_Interaction';
 import { Inventory } from './game/hud/Inventory';
 import { DoSightLineThing } from './game/tiles/Rooms';
 import { HudStats } from './game/hud/Hud_Stats';
+import { GetMonsters } from './game/items/Monsters';
 
 export let centerX = 0;
 export let centerY = 0;
@@ -184,21 +185,33 @@ function animate() {
     }
   }
 
-  // for now we are assuming the player is ALWAYS centered. 
-  // This is probably bad and we may want to change it when we switch to a canvas based approach.
-  MoveItems([player]);
+  MoveItems([player, ...GetMonsters()]);
   CollideWithWalls(player, FirstFloor, true);
-  //GetItems().forEach(item => CollideWithWalls(item, FirstFloor));
+  GetItems().filter(item => item.moveable && item.blockObjects).forEach(item => CollideWithWalls(item, FirstFloor));
+
+  GetMonsters().forEach(monster => {
+    const attackingPlayer = monster.checkForAttack([player]);
+    if (attackingPlayer) {
+      // do rolls and stuff!
+      const playerRoll = attackingPlayer.stats.roll(monster.attackType);
+      const monsterRoll = monster.stats.roll(monster.attackType);
+      console.log(`Monster did ${monsterRoll - playerRoll} damage!`);
+    }
+  })
+
   ApplyFriction([player]);
 
   // TODO: don't check for interaction distance EVERY frame, this is totaly overkill
+  // BRO DO we really need ROOM items vs NORMAL items??
+  // room items should probably be only things that ARENT moveable.
+  // like decorative things or things for the room geometry like counters and shelves and stuff.  
   const roomItems = FirstFloor.getCoord(GetTileCoord(player.position))?.info.items?.filter(item => !item.hidden);
   SetInteractables(
     GetItemsInInteractionDistance(
       player,
       [
         ...GetItems(),
-        ...(roomItems || []) // YO! This doesn't handle the tile offset... these are all RELATIVE. maybe we should CHANGE that. the relative thing is really tough.
+        ...(roomItems || []),
       ]
     )
   );
@@ -224,5 +237,11 @@ function animate() {
 }
 
 animate();
+
+// SLOW STUFF
+setInterval(() => {
+  GetMonsters().forEach(monster => monster.decide_move([player]));
+  console.log("Monsters", GetMonsters(), GetItems());
+}, 1000);
 
 export default App;
