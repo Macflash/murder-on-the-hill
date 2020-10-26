@@ -10,6 +10,11 @@ import { Inventory } from './game/hud/Inventory';
 import { DoSightLineThing } from './game/tiles/Rooms';
 import { HudStats } from './game/hud/Hud_Stats';
 import { GetMonsters } from './game/items/Monsters';
+import { HostConnection } from './rtc/api';
+
+const hc = new HostConnection();
+
+hc.hostNewGame();
 
 export let centerX = 0;
 export let centerY = 0;
@@ -197,7 +202,6 @@ function animate() {
       // do rolls and stuff!
       const playerRoll = attackingPlayer.stats.roll(monster.attackType);
       const monsterRoll = monster.stats.roll(monster.attackType);
-      //console.log(`Monster did ${monsterRoll - playerRoll} damage!`);
     }
   })
 
@@ -243,7 +247,7 @@ animate();
 // SLOW STUFF
 setInterval(() => {
   GetMonsters().forEach(monster => monster.decide_move([player]));
-  console.log("Monsters", GetMonsters(), GetItems());
+  //console.log("Monsters", GetMonsters(), GetItems());
 }, 1000);
 
 export default App;

@@ -43,7 +43,7 @@ export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D, center:
         ctx.drawImage(imageEL, screenC.x, screenC.y);
     }
     else {
-        console.log(`item ${screenC.x},${screenC.y}`)
+        //console.log(`item ${screenC.x},${screenC.y}`)
         ctx.fillStyle = item.color || "grey"; // grey..ish?
         ctx.fillRect(screenC.x, screenC.y, box.width, box.height);
     }

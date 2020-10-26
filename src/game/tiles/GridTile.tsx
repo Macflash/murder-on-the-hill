@@ -58,6 +58,7 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; overlayMode: boolean
     }}>
     {tile.info.name}
     {AllDirections().map(d => <GridWall
+      key={d}
       RenderApp={RenderApp}
       overlayMode={overlayMode}
       tile={tile}

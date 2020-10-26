@@ -37,6 +37,7 @@ export function InteractionButtons({ item, player, inInventory = false, onGround
                 && (interaction.canDoOnGround || !onGround))
             ?.map(interaction =>
                 <button
+                    key={interaction.name}
                     style={{ cursor: "pointer" }}
                     onClick={() => interaction.action(player, item)}>
                     {interaction.name}
@@ -51,7 +52,9 @@ export function Interactions(props: { player: Player }) {
 
     return <>
         {interactables.filter(i => i.name || i.playerInteractions?.length).map(item =>
-            <div style={{
+            <div 
+            key={item.name}
+            style={{
                 ...MenuStyle,
                 zIndex: 100,
                 ...toScreenPositionStyle(Add(
