@@ -1,7 +1,6 @@
-import { centerX, centerY } from "../../App";
 import { tileSize, wallSize } from "../tiles/Size";
 import { CollideWithWalls } from "../items/Collision";
-import { Coord } from "../coordinates/Coord";
+import { Coord, toScreenSpot } from "../coordinates/Coord";
 import { Floor } from "../tiles/Floor";
 import { Item } from "../items/Items";
 
@@ -17,10 +16,8 @@ var viewDist = GetTileViewDist();
 /** Returns where this hits a wall! */
 const rayStep = wallSize;
 var rayLength = 10 + viewDist * tileSize / rayStep; //was like 75 or 100;
-console.log("ray length", rayLength);
 window.addEventListener('resize', () => {
     rayLength = 10 + viewDist * tileSize / rayStep;
-    console.log("ray length", rayLength);
 });
 // 20 is ok, 60 is good, 120 is REAL fine. 200 cant really tell the difference.
 const angleSize = Math.PI / 100;
@@ -53,18 +50,11 @@ export function shootRaysInCircle(start: Coord, floor: Floor) {
     return points;
 }
 
-export function toScreenSpot(c: Coord): Coord {
-    return {
-        x: c.x - centerX + (.5 * window.innerWidth),
-        y: c.y - centerY + (.5 * window.innerHeight),
-    }
-}
-
-export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, floor: Floor) {
+export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, floor: Floor, center: Coord) {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     const rayPoints = shootRaysInCircle(player.position, floor);
-    const ps = toScreenSpot(player.position);
+    const ps = toScreenSpot(player.position, center);
     const gradient = ctx.createRadialGradient(ps.x, ps.y,70, ps.x, ps.y, viewDist * tileSize);
     gradient.addColorStop(0, "lightyellow");
     gradient.addColorStop(.07, "rgba(255,255,0,1)");
@@ -74,13 +64,13 @@ export function UpdateFogCanvas(ctx: CanvasRenderingContext2D, player: Item, flo
     ctx.fillStyle = gradient; // "lightyellow";
     ctx.strokeStyle = "1px lightyellow";
     ctx.beginPath();
-    const playerCoord = toScreenSpot(player.position);
+    const playerCoord = toScreenSpot(player.position, center);
     ctx.moveTo(playerCoord.x, playerCoord.y);
     rayPoints.forEach(point => {
-        const p = toScreenSpot(point);
+        const p = toScreenSpot(point, center);
         ctx.lineTo(p.x, p.y);
     });
-    const p = toScreenSpot(rayPoints[0]);
+    const p = toScreenSpot(rayPoints[0], center);
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
     ctx.fill();

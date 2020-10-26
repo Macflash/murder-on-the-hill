@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Coord } from '../coordinates/Coord';
 import { Item } from "../items/Items";
-import { toScreenSpot } from './SightLines';
+import { toScreenSpot } from './../coordinates/Coord';
 import { MenuStyle } from './MenuStyle';
 import { Player } from '../items/Player';
 
@@ -18,8 +18,8 @@ export function Add(a: Coord, b: Coord) {
     };
 }
 
-export function toScreenPositionStyle(c: Coord): React.CSSProperties {
-    const spot = toScreenSpot(c);
+export function toScreenPositionStyle(c: Coord, center: Coord): React.CSSProperties {
+    const spot = toScreenSpot(c, center);
     return {
         top: spot.y,
         left: spot.x,
@@ -46,25 +46,25 @@ export function InteractionButtons({ item, player, inInventory = false, onGround
 }
 
 // want it like.. by the player?
-export function Interactions(props: { player: Player }) {
-    const { player } = props;
+export function Interactions(props: { player: Player, center: Coord }) {
+    const { player, center } = props;
     if (interactables.length <= 0) { return null; }
 
     return <>
         {interactables.filter(i => i.name || i.playerInteractions?.length).map(item =>
-            <div 
-            key={item.name}
-            style={{
-                ...MenuStyle,
-                zIndex: 100,
-                ...toScreenPositionStyle(Add(
-                    item.position,
-                    { x: .5 * item.width + 5, y: .5 * item.height + 5 }
-                )),
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-            }}>
+            <div
+                key={item.name}
+                style={{
+                    ...MenuStyle,
+                    zIndex: 100,
+                    ...toScreenPositionStyle(Add(
+                        item.position,
+                        { x: .5 * item.width + 5, y: .5 * item.height + 5 }
+                    ), center),
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                }}>
                 <InteractionButtons item={item} player={player} onGround={true} />
             </div>
         )}

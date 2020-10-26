@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Add, Coord, Subtract } from "../coordinates/Coord";
-import { toScreenSpot } from '../hud/SightLines';
+import { Coord } from "../coordinates/Coord";
+import { toScreenSpot } from '../coordinates/Coord';
 import { PlayerItemInteraction, PickUpItem, DisplayItemInfo, CantDropItem, DropItem } from './Interaction';
 
 export interface Item {
@@ -32,7 +32,7 @@ var drawnImages = new Map<string, HTMLImageElement>();
 
 export function DrawItemToCtx(item: Item, ctx: CanvasRenderingContext2D, center: Coord) {
     const box = ToBoundingBox(item);
-    const screenC = toScreenSpot(box); // weird cast but ok duck typing do your thing
+    const screenC = toScreenSpot(box, center); // weird cast but ok duck typing do your thing
     if (item.image) {
         let imageEL = drawnImages.get(item.image);
         if (!imageEL) {
@@ -81,7 +81,7 @@ export function GetItems() {
 
 export const itemZindex = 50;
 
-export function GridItem(props: { item: Item, zIndex?: number,center: Coord }) {
+export function GridItem(props: { item: Item, zIndex?: number, center: Coord }) {
     const { item, center, zIndex } = props;
     const hW = item.width * .5;
     const hH = item.height * .5;

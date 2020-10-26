@@ -87,7 +87,7 @@ function createCanvas(id: string) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  document.addEventListener('resize', ()=>{
+  document.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
   })
@@ -108,7 +108,7 @@ var resultCtx: CanvasRenderingContext2D;
 export function DoSightLineThing(player: Item, floor: Floor, center: Coord) {
   DrawAllRooms(floor, center);
   DrawAllItems(center); // this is wrong somehow
-  DrawSightCanvas(player, floor);
+  DrawSightCanvas(player, floor, center);
   DrawResult();
 }
 
@@ -121,12 +121,12 @@ export function DrawAllRooms(floor: Floor, center: Coord) {
 
 export function DrawAllItems(center: Coord) {
   GetItems().forEach(item => {
-    DrawItemToCtx(item ,tileCtx, center);
+    DrawItemToCtx(item, tileCtx, center);
   });
 }
 
-export function DrawSightCanvas(player: Item, floor: Floor) {
-  UpdateFogCanvas(sightCtx, player, floor);
+export function DrawSightCanvas(player: Item, floor: Floor, center: Coord) {
+  UpdateFogCanvas(sightCtx, player, floor, center);
   sightCtx.filter = "blur(5px)";
 }
 

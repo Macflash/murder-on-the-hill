@@ -15,13 +15,9 @@ export function GetTileViewDist() {
 
 export var tileViewDist = GetTileViewDist();
 
-console.log("grid tile tileViewDist", tileViewDist);
-
 window.addEventListener('resize', () => {
   tileViewDist = GetTileViewDist();
 });
-
-console.log("Initial view dist", tileViewDist);
 
 export function GetTileTopAndLeft(tileCoord: Coord, center: Coord) {
   return {

@@ -84,3 +84,11 @@ export function HammingDistance(a: Coord, b: Coord) {
 export function EitherDirectionDistance(a: Coord, b: Coord) {
   return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 }
+
+// Screen things
+export function toScreenSpot(c: Coord, center: Coord): Coord {
+  return {
+      x: c.x - center.x + (.5 * window.innerWidth),
+      y: c.y - center.y + (.5 * window.innerHeight),
+  }
+}
