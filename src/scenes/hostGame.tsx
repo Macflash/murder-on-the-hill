@@ -28,7 +28,7 @@ const canvasStyle: React.CSSProperties = {
   left: 0,
 };
 
-export function Game(props: {isHost: boolean}) {
+export function HostGame(props: {isHost: boolean}) {
   const [, setState] = React.useState(0);
   const rerender = React.useCallback(() => {
     setState(Math.random());

@@ -81,13 +81,14 @@ export class HostConnection {
     }
 }
 
-
 export interface WebSocketServerMessage {
     type: "NewGame" | "NewGameResponse" | "SignalHost" | "SignalPlayer",
 }
 
+// Sent from the Host to the server to get a GameCode.
 export interface NewGameMessage extends WebSocketServerMessage {
     type: "NewGame",
+    // No other payload
 }
 
 function createNewGameMessage(): string {
@@ -95,11 +96,14 @@ function createNewGameMessage(): string {
     return JSON.stringify(request);
 }
 
+// Response from the server with the assigned GameCode
 export interface NewGameResponse extends WebSocketServerMessage {
     type: "NewGameResponse",
     gameCode: string,
 }
 
+// Sent from the Host to the player to connect via WebRTC
+// This message is forwared as-is to the player by the server.
 export interface SignalPlayer extends WebSocketServerMessage {
     type: "SignalPlayer",
     playerId: string,

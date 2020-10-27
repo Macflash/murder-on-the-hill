@@ -7,9 +7,9 @@ const Hosts = new Map();
 const Players = new Map();
 
 console.log("starting...");
-const wss = new WebSocket.Server({ port: 8081 });
+const wsServer = new WebSocket.Server({ port: 8081 });
 
-wss.on('connection', (ws) => {
+wsServer.on('connection', (ws) => {
   console.log("New connection.");
 
   let isNew = true;
@@ -62,6 +62,7 @@ wss.on('connection', (ws) => {
       case "SignalHost":
         console.log("Server got SignalHost request");
         if (!isPlayer) { throw new Error("Only players can call SignalHost!"); }
+        if (playerId !== clientData.playerId) { throw new Error("Player id mismatch in Signal Host!"); }
 
         // get the host 
         const host = Hosts.get(gameCode);
@@ -73,7 +74,6 @@ wss.on('connection', (ws) => {
 
       case "SignalPlayer":
         console.log("Server got SignalPlayer request");
-        // TODO: this might not always be the case, we may want to do a mesh for audio/video streams.
         if (!isHost) { throw new Error("Only hosts can call SignalHost!"); }
 
         // Need to parse to know which player should get the message
@@ -93,6 +93,8 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
+    // TODO: We can also delete any connection after say 30 minutes.
+    // Player connections should likely be open for 1-5 minutes MAX.
     if (isHost) {
       Hosts.delete(gameCode);
     }
@@ -101,15 +103,17 @@ wss.on('connection', (ws) => {
     }
   });
 
-  ws.on('error', () => { });
-
-  //ws.send('something');
+  ws.on('error', (errorWs, error) => {
+    console.error("error in websocket", error);
+  });
 });
 
+// Create a random upper case letter
 function randomUpperChar() {
   return Math.random() * 25 + 65;
 }
 
+// 6 character game code
 function createGameCode() {
   return String.fromCharCode(
     randomUpperChar(),
@@ -121,7 +125,7 @@ function createGameCode() {
   );
 }
 
-
+// 12 character player code
 function createPlayerId() {
   return String.fromCharCode(
     randomUpperChar(),

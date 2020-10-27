@@ -17,6 +17,8 @@ export class PlayerConnection {
         this.resolveOnPlayerId = resolve;
     });
 
+    constructor(private onHostData: (data: any) => void){}
+
     get onAssignedPlayerId() {
         return this.onPlayerId;
     }
@@ -55,7 +57,7 @@ export class PlayerConnection {
     }
 
     // Signal the host to establish the WebRTC connection
-    initializeHostConnetion() {
+    private initializeHostConnetion() {
         this.host.on('signal', data => {
             if (!this.playerId) { throw new Error("Can't signal host without a player id!"); }
             if (!this.gameCode) { throw new Error("Can't signal host without a game code!"); }
@@ -82,6 +84,7 @@ export interface WebSocketServerMessage {
     type: "NewPlayer" | "NewPlayerResponse" | "SignalHost" | "SignalPlayer",
 }
 
+// Sent by a player trying to join the game specified in gameCode.
 export interface NewPlayer extends WebSocketServerMessage {
     type: "NewPlayer",
     gameCode: string,
@@ -92,11 +95,14 @@ function createNewPlayer(gameCode: string): string {
     return JSON.stringify(request);
 }
 
+// Response from the server providing the player with their playerId.
 export interface NewPlayerResponse extends WebSocketServerMessage {
     type: "NewPlayerResponse",
     playerId: string,
 }
 
+// Sent by the player to connect to the Host via WebRTC.
+// This same message is forwarded as-is to the Host from the server.
 export interface SignalHost extends WebSocketServerMessage {
     type: "SignalHost",
     gameCode: string,

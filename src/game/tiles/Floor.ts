@@ -9,8 +9,15 @@ import { BasicMonster } from '../items/Monsters';
 export function IndexCoord(c: Coord) { return Index(c.x, c.y); }
 export function Index(x: number, y: number) { return `${x}, ${y}`; }
 
+export interface TileCoord extends Coord {
+  floor: number;
+}
+
 export class Floor {
-  constructor(public readonly name: string) { }
+  constructor(
+    public readonly name: string,
+    public readonly number: number,
+  ) { }
 
   private grid = new Map<string, Tile>();
 
@@ -94,7 +101,7 @@ export class Floor {
   }
 }
 
-export const FirstFloor = new Floor("Main Floor");
+export const FirstFloor = new Floor("Main Floor", 1);
 const entrance = Entrance.copy();
 const monster = new BasicMonster();
 monster.position.x = -125;

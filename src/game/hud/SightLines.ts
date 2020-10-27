@@ -39,8 +39,12 @@ export function shootRay(start: Coord, stepVector: Coord, floor: Floor): Coord {
 // PI/10 is clunky, PI/20 is pretty dang smooth.
 export function shootRaysInCircle(start: Coord, floor: Floor) {
     const points: Coord[] = [];
+    // too jittery lol
+    //const startAngle = Math.random() * angleSize;
     let angle = 0;
-    while (angle < Math.PI * 2) {
+    while (angle < (Math.PI * 2)) {
+        // yo we should do a ROOM AWARE version, like make the box THE ROOM,
+        // and only cast a CONE through door ways.l
         points.push(shootRay(start, {
             x: Math.cos(angle) * rayStep,
             y: Math.sin(angle) * rayStep,

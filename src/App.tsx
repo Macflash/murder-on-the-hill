@@ -14,16 +14,20 @@ export function App() {
       setGameCode={setGameCode}
       gameCode={gameCode || ""}
       setIsHost={setIsHost}
-    />
+    />;
   }
-  if (state == "Game") { return <Game /> }
+  if (state == "Game") {
+    return <Game
+      isHost={isHost}
+    />;
+  }
   if (state == "Lobby") {
     return <Lobby
       isHost={isHost}
       setState={setState}
       setGameCode={setGameCode}
       gameCode={gameCode || ""}
-    />
+    />;
   }
 
   return <div>

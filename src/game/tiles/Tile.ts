@@ -1,7 +1,7 @@
 import { GetTileTopAndLeft } from './GridTile';
 import { Coord, MoveCoord } from '../coordinates/Coord';
 import { Direction, Rotate } from '../coordinates/Direction';
-import { Floor } from './Floor';
+import { Floor, TileCoord } from './Floor';
 import { Item, CopyItem } from '../items/Items';
 import { tileSize } from './Size';
 
@@ -24,6 +24,7 @@ export class Tile {
   //public rotation = 0; // TODO
   public x = 0;
   public y = 0;
+  public floor = 0;
   private initialDoors: Set<Direction>;
   private rotation = 0;
   private imageEl_: HTMLImageElement | null = null;
@@ -33,8 +34,8 @@ export class Tile {
     this.initialDoors = new Set<Direction>(doors);
   }
 
-  get coord(): Coord {
-    return { x: this.x, y: this.y };
+  get coord(): TileCoord {
+    return { x: this.x, y: this.y, floor: this.floor };
   }
 
   get doors(): Set<Direction> {
