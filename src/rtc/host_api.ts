@@ -16,6 +16,11 @@ export class HostConnection {
         return this.onGameCode;
     }
 
+    constructor(
+        private onPlayerData: (playerId: string, data: string) => void,
+        private log = false,
+    ) { }
+
     hostNewGame() {
         // Connection opened
         this.socket.addEventListener('open', e => {
@@ -28,55 +33,66 @@ export class HostConnection {
             switch (serverData.type) {
                 case "NewGameResponse":
                     this.gameCode = (serverData as NewGameResponse).gameCode;
-                    console.log("Assigned a game code", this.gameCode);
+                    this.log && console.log("Assigned a game code", this.gameCode);
                     this.resolveOnGameCode?.(this.gameCode);
                     break;
 
                 case "SignalHost":
                     const signalData = serverData as SignalHost;
                     const { playerId, signal } = signalData;
-                    console.log("Received signal from", playerId, signal);
+                    this.log && console.log("Received signal from", playerId, signal);
                     if (!this.players.has(playerId)) {
                         // existing player
-                        console.log("New player!");
-                        const peer = new Peer({initiator: false});
-                        this.players.set(playerId, peer);
-
+                        const peer = new Peer();
+                        console.log("New player!", playerId, peer);
+                        peer.on('readable', ()=>{
+                            console.log("READABLE!");
+                        })
                         // set up the event handler for our peer connection 
                         // to send signal data to the other player
                         peer.on('signal', data => {
+                            // THIS NEVER FIRES WTF
                             console.log("signal data from host that should go to the remote player");
                             // we need to get this data to the other player
                             this.socket.send(createSignalPlayer(playerId, data));
                         });
 
                         peer.on('connect', () => {
-                            "Connected to a player successfully!";
-                            peer.send("yo from host");
+                            console.log("Connected to a player successfully!");
+                            peer.send("hi from host!");
+
                         });
-                        
+
                         peer.on('data', data => {
                             alert("data from player!");
-                            console.log("Data from player", data);
+                            this.onPlayerData(playerId, data?.toString());
                         });
 
                         peer.on('error', e => {
                             console.error("error from player", e);
                         });
 
-                        console.log(playerId, peer);
+                        this.players.set(playerId, peer);
                     }
 
                     // Pass our peer connection the signal data.
                     const player = this.players.get(playerId);
-                    if(!player){ throw new Error("Invalid player! " + playerId);}
+                    if (!player) { throw new Error("Invalid player! " + playerId); }
+                    console.log("gave our player peer object the signal data", signal);
                     player.signal(signal);
-                    console.log("gave our player peer object the signal data");
                     break;
 
                 default:
                     console.error("unrecognized message from the server!", e.data);
             }
+        });
+    }
+
+    sendToAllPlayers(data: any){
+        console.log("sending to ", this.players);
+        this.players.forEach(peer => {
+            console.log(peer);
+            peer.send(data);
         });
     }
 }

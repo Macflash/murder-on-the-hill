@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { HostConnection } from '../rtc/host_api';
-import { PlayerConnection } from '../rtc/player_api';
+import { Player } from '../game/items/Player';
+import { HostGameData, PlayerGameData } from '../rtc/gameData';
 interface LobbyProps {
     setState: (state: "Menu" | "Game" | "Lobby") => void,
     gameCode: string,
@@ -12,14 +12,15 @@ export function Lobby(props: LobbyProps) {
     return props.isHost ? <HostLobby {...props} /> : <PlayerLobby {...props} />;
 }
 
+var hostData: HostGameData;
 function HostLobby(props: LobbyProps) {
-    React.useEffect(() => {
-        if (props.isHost) {
-            const hc = new HostConnection();
-            hc.hostNewGame();
-            hc.onAssignedGameCode.then(code => props.setGameCode(code));
-        }
-    }, []);
+    if (!props.isHost) { throw new Error("Player can't access host lobby!!") }
+
+    if (!hostData) {
+        hostData = new HostGameData();
+        hostData.connection.onAssignedGameCode
+            .then(code => props.setGameCode(code));
+    }
 
     return <div style={{ color: "white" }}>
         <div>Murder on the Hill</div>
@@ -40,6 +41,7 @@ function HostLobby(props: LobbyProps) {
             {props.isHost && props.gameCode ?
                 <div>
                     <button onClick={() => {
+                        hostData.StartGame();
                         props.setState("Game");
                     }}>Start!</button>
                 </div>
@@ -48,16 +50,20 @@ function HostLobby(props: LobbyProps) {
     </div>
 }
 
+var playerData: PlayerGameData;
 function PlayerLobby(props: LobbyProps) {
+    if (props.isHost) { throw new Error("Host can't access player lobby!!") }
+
+    if (!playerData) {
+        playerData = new PlayerGameData(props.gameCode);
+    }
+
     const [playerId, setPlayerId] = React.useState("");
 
-    React.useEffect(() => {
-        if (!props.isHost) {
-            const pc = new PlayerConnection();
-            pc.joinGame(props.gameCode);
-            pc.onAssignedPlayerId.then(id => setPlayerId(id));
-        }
-    }, []);
+    if (!playerId) {
+        playerData.connection.onAssignedPlayerId
+            .then(id => setPlayerId(id));
+    }
 
     return <div style={{ color: "white" }}>
         <div>Murder on the Hill</div>
@@ -66,15 +72,15 @@ function PlayerLobby(props: LobbyProps) {
             null
         }
 
-        {playerId ?
-            <div>Your id: {playerId}.</div> :
-            <div>Connecting to server...</div>
+        {!playerId ?
+            <div>Connecting to server...</div> :
+            <div>Your id: {playerId}.</div>
         }
 
-
-        {props.gameCode && playerId ?
-            "Connecting to host!" : null
+        {props.gameCode && !playerId ?
+            "Connecting to host..." :
+            <div>Connected.</div>
         }
 
     </div>
-}
+} 

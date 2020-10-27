@@ -8,7 +8,7 @@ export class PlayerConnection {
     private socket = new WebSocket('ws://localhost:8081');
 
     // A connection to the host
-    private host = new Peer({ initiator: true });
+    private host = new Peer({ initiator: true, trickle: false, });
 
     private gameCode?: string;
     private playerId?: string;
@@ -21,6 +21,10 @@ export class PlayerConnection {
 
     get onAssignedPlayerId() {
         return this.onPlayerId;
+    }
+
+    sendToHost(data: any){
+        this.host.send(data);
     }
 
     joinGame(gameCode: string) {
@@ -70,8 +74,7 @@ export class PlayerConnection {
         });
 
         this.host.on('data', data => {
-            alert("data from host!");
-            console.log("Data from host", data);
+            this.onHostData(data.toString());
         });
 
         this.host.on('error', e => {

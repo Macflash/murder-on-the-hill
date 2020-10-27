@@ -42,6 +42,7 @@ wsServer.on('connection', (ws) => {
       case "NewPlayer":
         console.log("Server got NewPlayer request");
         if (isHost) { throw new Error("Host should't send NewPlayer requests!"); }
+        if (isPlayer || playerId) { throw new Error("Player should already be connected, shouldnt need multiple NEW PLAYER requests."); }
         isHost = false;
         isPlayer = true;
         gameCode = clientData.gameCode;
