@@ -1,14 +1,15 @@
 import React from 'react';
-import { GridTile } from '../game/tiles/GridTile';
-import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from '../game/items/Collision';
-import { FirstFloor, Index } from '../game/tiles/Floor';
-import { GridPlayer, player } from '../game/items/Player';
-import { GetItems } from '../game/items/Items';
-import { Interactions, SetInteractables } from '../game/hud/Hud_Interaction';
-import { Inventory } from '../game/hud/Inventory';
-import { DoSightLineThing } from '../game/tiles/Rooms';
-import { HudStats } from '../game/hud/Hud_Stats';
-import { GetMonsters } from '../game/items/Monsters';
+import { GridTile } from '../../game/tiles/GridTile';
+import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from '../../game/items/Collision';
+import { Index } from '../../game/tiles/Floor';
+import { GridPlayer, player } from '../../game/items/Player';
+import { GetItems } from '../../game/items/Items';
+import { Interactions, SetInteractables } from '../../game/hud/Hud_Interaction';
+import { Inventory } from '../../game/hud/Inventory';
+import { DoSightLineThing } from '../../game/tiles/Rooms';
+import { HudStats } from '../../game/hud/Hud_Stats';
+import { GetMonsters } from '../../game/items/Monsters';
+import { HostGameData } from '../../rtc/HostGameData';
 
 
 export let centerX = 0;
@@ -28,7 +29,7 @@ const canvasStyle: React.CSSProperties = {
   left: 0,
 };
 
-export function PlayerGame(props: {isHost: boolean}) {
+export function HostGame(props: {isHost: boolean}) {
   const [, setState] = React.useState(0);
   const rerender = React.useCallback(() => {
     setState(Math.random());
@@ -56,7 +57,7 @@ export function PlayerGame(props: {isHost: boolean}) {
           <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>Recenter Map</button>
         </div> : null}
 
-      <GridPlayer center={center} />
+      <GridPlayer center={center} player={player} />
 
       <canvas id="Canvas_SightResult"
         width={window.innerWidth}
@@ -66,11 +67,11 @@ export function PlayerGame(props: {isHost: boolean}) {
           zIndex: 6,
         }} />
 
-      {FirstFloor.tiles.map((tile) => <GridTile
+      {HostGameData.Get().yourFloor.tiles.map((tile) => <GridTile
         RenderApp={rerender}
         center={center}
         overlayMode={true}
-        floor={FirstFloor}
+        floor={HostGameData.Get().yourFloor}
         tile={tile}
         key={Index(tile.x, tile.y)}
       />)}
@@ -169,8 +170,8 @@ function animate() {
   }
 
   MoveItems([player, ...GetMonsters()]);
-  CollideWithWalls(player, FirstFloor, true);
-  GetItems().filter(item => item.moveable && item.blockObjects).forEach(item => CollideWithWalls(item, FirstFloor));
+  CollideWithWalls(player, HostGameData.Get().yourFloor, true);
+  GetItems().filter(item => item.moveable && item.blockObjects).forEach(item => CollideWithWalls(item, HostGameData.Get().yourFloor));
 
   GetMonsters().forEach(monster => {
     const attackingPlayer = monster.checkForAttack([player]);
@@ -187,7 +188,7 @@ function animate() {
   // BRO DO we really need ROOM items vs NORMAL items??
   // room items should probably be only things that ARENT moveable.
   // like decorative things or things for the room geometry like counters and shelves and stuff.  
-  const roomItems = FirstFloor.getCoord(GetTileCoord(player.position))?.info.items?.filter(item => !item.hidden);
+  const roomItems = HostGameData.Get().yourFloor.getCoord(GetTileCoord(player.position))?.info.items?.filter(item => !item.hidden);
   SetInteractables(
     GetItemsInInteractionDistance(
       player,
@@ -211,7 +212,7 @@ function animate() {
 
   const center = { x: centerX, y: centerY };
 
-  DoSightLineThing(player, FirstFloor, center);
+  DoSightLineThing(player, HostGameData.Get().yourFloor, center);
   //  DrawAllRooms(FirstFloor);
   // BASIC fog, wont need latershowFog && UpdateFog(player, FirstFloor);
   RenderApp();

@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { Coord } from "../coordinates/Coord";
 import { toScreenSpot } from '../coordinates/Coord';
+import { TileCoord } from '../tiles/Floor';
 import { PlayerItemInteraction, PickUpItem, DisplayItemInfo, CantDropItem, DropItem } from './Interaction';
 
 export interface Item {
-    position: Coord;
+    // all items should get an ID to keep track of 'em
+    // (not done yet)
+    id?: string;
+
+    position: TileCoord;
     height: number;
     width: number;
 

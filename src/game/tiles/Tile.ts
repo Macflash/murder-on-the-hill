@@ -5,7 +5,7 @@ import { Floor, TileCoord } from './Floor';
 import { Item, CopyItem } from '../items/Items';
 import { tileSize } from './Size';
 
-interface TileInfo {
+export interface TileInfo {
   name: string;
 
   doors: Direction[];
@@ -14,9 +14,7 @@ interface TileInfo {
 
   items?: Item[]; // These positions are in relative roomX, roomY.
 
-  // is there only 1 copy or are there multiple? 
-  // SHOULD we just have a stack of rooms and pick from them and take them out when we use them??
-  copies?: boolean;
+  position?: TileCoord;
 }
 
 export class Tile {
@@ -30,8 +28,24 @@ export class Tile {
   private imageEl_: HTMLImageElement | null = null;
 
   constructor(public readonly info: TileInfo) {
-    const { doors } = info;
+    const { doors, position } = info;
+    if(position){
+      this.x = position.x;
+      this.y = position.y;
+      this.floor = position.floor || 0;
+    }
+
     this.initialDoors = new Set<Direction>(doors);
+  }
+
+  toInfo(){
+    this.info.position = {
+      x: this.x,
+      y: this.y,
+      floor: this.floor,
+    }
+
+    return this.info;
   }
 
   get coord(): TileCoord {

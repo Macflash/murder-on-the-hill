@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Player } from '../game/items/Player';
-import { HostGameData, PlayerGameData } from '../rtc/gameData';
+import { HostGameData } from "../rtc/HostGameData";
+import { PlayerGameData } from "../rtc/PlayerGameData";
 interface LobbyProps {
     setState: (state: "Menu" | "Game" | "Lobby") => void,
     gameCode: string,
@@ -12,15 +12,18 @@ export function Lobby(props: LobbyProps) {
     return props.isHost ? <HostLobby {...props} /> : <PlayerLobby {...props} />;
 }
 
-var hostData: HostGameData;
 function HostLobby(props: LobbyProps) {
     if (!props.isHost) { throw new Error("Player can't access host lobby!!") }
 
-    if (!hostData) {
-        hostData = new HostGameData();
-        hostData.connection.onAssignedGameCode
-            .then(code => props.setGameCode(code));
-    }
+    HostGameData.Get().connection.onAssignedGameCode
+        .then(code => props.setGameCode(code));
+
+    const [players, setPlayers] = React.useState(HostGameData.Get().connection.playerIds);
+    React.useEffect(() => {
+        HostGameData.Get().connection.onPlayerJoin(() => {
+            setPlayers(HostGameData.Get().connection.playerIds);
+        })
+    }, [setPlayers]);
 
     return <div style={{ color: "white" }}>
         <div>Murder on the Hill</div>
@@ -41,29 +44,46 @@ function HostLobby(props: LobbyProps) {
             {props.isHost && props.gameCode ?
                 <div>
                     <button onClick={() => {
-                        hostData.StartGame();
+                        HostGameData.Get().StartGame();
                         props.setState("Game");
                     }}>Start!</button>
                 </div>
                 : null}
+
+            <div>
+                <div>Players: </div>
+                {
+                    HostGameData.Get().connection.playerIds.map(id => <div>{id}</div>)
+                }
+            </div>
         </div>
     </div>
 }
 
-var playerData: PlayerGameData;
 function PlayerLobby(props: LobbyProps) {
     if (props.isHost) { throw new Error("Host can't access player lobby!!") }
-
-    if (!playerData) {
-        playerData = new PlayerGameData(props.gameCode);
-    }
 
     const [playerId, setPlayerId] = React.useState("");
 
     if (!playerId) {
-        playerData.connection.onAssignedPlayerId
+        PlayerGameData.Set(props.gameCode);
+        PlayerGameData.Get().connection.onAssignedPlayerId
             .then(id => setPlayerId(id));
     }
+
+    const [players, setPlayers] = React.useState(PlayerGameData.Get().players);
+    React.useEffect(() => {
+        PlayerGameData.Get().onDataChanged(() => {
+            setPlayers(PlayerGameData.Get().players);
+        })
+    }, [setPlayers]);
+    
+    React.useEffect(() => {
+        PlayerGameData.Get().onGameStart(() => {
+            console.log("switching to the game, cause on game started!");
+            props.setState("Game");
+        })
+    }, [props.setState]);
 
     return <div style={{ color: "white" }}>
         <div>Murder on the Hill</div>
@@ -81,6 +101,17 @@ function PlayerLobby(props: LobbyProps) {
             "Connecting to host..." :
             <div>Connected.</div>
         }
+
+        <div>
+            <div>Players: </div>
+            {
+                PlayerGameData.Get().players.map(p => <div>
+                    {p.name}:
+                    {p.playerId}
+                    {p === PlayerGameData.Get().you ? "(You)" : null}
+                </div>)
+            }
+        </div>
 
     </div>
 } 

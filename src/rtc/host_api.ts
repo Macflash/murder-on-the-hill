@@ -21,6 +21,10 @@ export class HostConnection {
         private log = false,
     ) { }
 
+    get playerIds() {
+        return Array.from(this.players.keys());
+    }
+
     hostNewGame() {
         // Connection opened
         this.socket.addEventListener('open', e => {
@@ -43,9 +47,9 @@ export class HostConnection {
                     this.log && console.log("Received signal from", playerId, signal);
                     if (!this.players.has(playerId)) {
                         // existing player
-                        const peer = new Peer();
+                        const peer = new Peer({ trickle: false, });
                         console.log("New player!", playerId, peer);
-                        peer.on('readable', ()=>{
+                        peer.on('readable', () => {
                             console.log("READABLE!");
                         })
                         // set up the event handler for our peer connection 
@@ -58,9 +62,8 @@ export class HostConnection {
                         });
 
                         peer.on('connect', () => {
+                            this.onPlayerJoinListeners.forEach(f => f());
                             console.log("Connected to a player successfully!");
-                            peer.send("hi from host!");
-
                         });
 
                         peer.on('data', data => {
@@ -88,12 +91,17 @@ export class HostConnection {
         });
     }
 
-    sendToAllPlayers(data: any){
+    sendToAllPlayers(data: any) {
         console.log("sending to ", this.players);
         this.players.forEach(peer => {
             console.log(peer);
             peer.send(data);
         });
+    }
+
+    private onPlayerJoinListeners: (() => void)[] = [];
+    onPlayerJoin(listener: () => void) {
+        this.onPlayerJoinListeners.push(listener);
     }
 }
 

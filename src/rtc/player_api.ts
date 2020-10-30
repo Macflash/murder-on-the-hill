@@ -70,7 +70,6 @@ export class PlayerConnection {
 
         this.host.on('connect', () => {
             console.log("Connected to the Host!");
-            this.host.send("hi from player!");
         });
 
         this.host.on('data', data => {

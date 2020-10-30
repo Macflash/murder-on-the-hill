@@ -3,84 +3,76 @@ import { Item } from "../game/items/Items";
 import { Player } from "../game/items/Player";
 import { Creature } from "../game/items/Stats";
 import { Floor } from "../game/tiles/Floor";
-import { Tile } from "../game/tiles/Tile";
-import { RtcEvent, StartGameMessage } from "./events/rtcEvents";
-import { TileAddedMessage } from "./events/tileEvents";
-import { HostConnection } from "./host_api";
-import { PlayerConnection } from "./player_api";
+import { Tile, TileInfo } from "../game/tiles/Tile";
 
 export interface GameData {
-    floors: Floor[];
+    tiles: TileInfo[];
     items: Item[];
     players: Player[];
     monsters: Creature[];
-
-    // anything else?a
 }
 
-export class BaseGameData {
+export class BaseGameData implements GameData {
     private started = false;
-    private floors: Floor[] = [];
-    private items: Item[] = [];
-    private players: Player[] = [];
-    private monsters: Creature[] = [];
+    public floors: Floor[] = [];
+    public items: Item[] = [];
+    public players: Player[] = [];
+    public monsters: Creature[] = [];
+
+    get tiles() {
+        return this.floors.flatMap(floor => floor.tiles.map(t => t.toInfo()));
+    }
 
     IsStarted() { return this.started; }
     SetStarted() {
         this.started = true;
     }
 
+    toGameDataObj(): GameData {
+        return {
+            tiles: this.tiles,
+            items: this.items,
+            monsters: this.monsters,
+            players: this.players,
+        };
+    }
+
+    Update(data: GameData) {
+        console.log("game data updating", data);
+
+        data.tiles.forEach(t => this.AddTile(t));
+
+        //TODO: DODODO
+        this.notifyDataChanged();
+    }
+
+    UpdateFloors(tiles: TileInfo[]) {
+        tiles.forEach(t => this.AddTile(t));
+    }
+
+    // Player related stuff
+    AddPlayer(player: Player) {
+        this.players.push(player);
+        this.notifyDataChanged();
+    }
+
     // Floor related stuff
-    AddTile(tile: Tile) {
-        const floor = this.floors[tile.floor];
-        if (!floor) {
+    AddTile(tileInfo: TileInfo) {
+        const tile = new Tile(tileInfo);
+        if (!this.floors[tile.floor]) {
             this.floors[tile.floor] = new Floor("", tile.floor);
         }
 
-        floor.setCoord(tile, tile.coord);
-    }
-}
-
-export class HostGameData extends BaseGameData {
-    public readonly connection = new HostConnection(this.onPlayerData);
-
-    constructor() {
-        super();
-        console.log("creating host game data");
-        this.connection.hostNewGame();
+        this.floors[tile.floor].setCoord(tile, tile.coord);
+        this.notifyDataChanged();
     }
 
-    onPlayerData(playerId: string, data: string) {
-
+    private onDataChangedListeners: (() => void)[] = [];
+    onDataChanged(listener: () => void) {
+        this.onDataChangedListeners.push(listener);
     }
 
-    StartGame() {
-        this.SetStarted();
-        this.connection.sendToAllPlayers(StartGameMessage());
-    }
-
-    // Basically override all the basic data set events and include sending them to the players??
-    // Floor related stuff
-    AddTile(tile: Tile) {
-        super.AddTile(tile);
-        this.connection.sendToAllPlayers(TileAddedMessage(tile));
-    }
-}
-
-export class PlayerGameData extends BaseGameData {
-    public readonly connection = new PlayerConnection(this.onHostData);
-
-    constructor(gameCode: string) {
-        super();
-        console.log("created player game data, joining game", gameCode);
-        this.connection.joinGame(gameCode);
-    }
-
-    onHostData(data: string) {
-        const hostData = JSON.parse(data) as RtcEvent;
-        switch (hostData.type) {
-            default:
-                console.error("unrecognized host data", hostData);
-        }
+    notifyDataChanged() {
+        this.onDataChangedListeners.forEach(f => f());
     }
 }
