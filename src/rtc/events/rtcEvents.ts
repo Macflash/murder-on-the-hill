@@ -3,6 +3,7 @@ import { GameData } from "../gameData";
 export type RtcEventType =
     "StartGame" |
     "AddPlayer" |
+    "UpdatePlayer" |
     "AddTile";
 
 export interface RtcEvent {

@@ -1,10 +1,10 @@
-import { Tile, TileInfo } from "../game/tiles/Tile";
-import { StartGameMessage } from "./events/rtcEvents";
+import { TileInfo } from "../game/tiles/Tile";
+import { RtcEvent, StartGameMessage } from "./events/rtcEvents";
 import { TileAddedMessage } from "./events/tileEvents";
-import { PlayerAddedEvent } from "./events/playerEvents";
+import { PlayerAddedEvent, PlayerUpdateEvent } from "./events/playerEvents";
 import { HostConnection } from "./host_api";
 import { BaseGameData } from "./gameData";
-import { BasicPlayer, Player, player } from "../game/items/Player";
+import { BasicPlayer, player, Player } from "../game/items/Player";
 import { Entrance } from "../game/tiles/Rooms";
 
 
@@ -25,7 +25,7 @@ export class HostGameData extends BaseGameData {
         this.connection.hostNewGame();
 
         // init some basic stuff for the game!
-        this.players.push(player);
+        this.players.push(BasicPlayer("host"));
         const entrance = Entrance.copy();
         entrance.floor = 0;
         entrance.x = 0;
@@ -48,12 +48,21 @@ export class HostGameData extends BaseGameData {
     }
 
     get yourFloor() {
-        console.log("your floor host", this.floors, this.you.position);
+        //console.log("your floor host", this.floors, this.you.position);
         return this.floors[this.you.position.floor || 0];
     }
 
     onPlayerData(playerId: string, data: string) {
-        console.log("got player data (do something with it eventually!)", playerId, data);
+        const playerData = JSON.parse(data) as RtcEvent;
+        switch (playerData.type) {
+            case "UpdatePlayer":
+                const playerUpdateData = playerData as PlayerUpdateEvent;
+                const { player: playerUpdate } = playerUpdateData;
+                //console.log(playerId, playerUpdate.playerId, "updating", player);
+                //if (playerId !== player.playerId) { throw "Player id updates didnt match!"; }
+                super.UpdatePlayer(playerUpdate);
+                break;
+        }
     }
 
     StartGame() {

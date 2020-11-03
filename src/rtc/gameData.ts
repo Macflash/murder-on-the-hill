@@ -38,7 +38,7 @@ export class BaseGameData implements GameData {
     }
 
     Update(data: GameData) {
-        console.log("game data updating", data);
+        console.log("game data updating (only tiles for now)", data);
 
         data.tiles.forEach(t => this.AddTile(t));
 
@@ -55,6 +55,26 @@ export class BaseGameData implements GameData {
         this.players.push(player);
         this.notifyDataChanged();
     }
+
+    UpdatePlayer(player: Player) {
+        let found = false;
+        this.players = this.players.map(p => {
+            if (p.playerId === player.playerId) {
+                found = true;
+                return player;
+            }
+
+            return p;
+        });
+
+        if (!found) {
+            console.log("not found adding new player", player, this.players);
+            this.players.push(player);
+        }
+
+        this.notifyDataChanged();
+    }
+
 
     // Floor related stuff
     AddTile(tileInfo: TileInfo) {

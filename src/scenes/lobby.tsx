@@ -71,10 +71,13 @@ function PlayerLobby(props: LobbyProps) {
             .then(id => setPlayerId(id));
     }
 
-    const [players, setPlayers] = React.useState(PlayerGameData.Get().players);
+    const [players, setPlayers] = React.useState([...PlayerGameData.Get().players]);
+
+    console.log("rendering!", players);
     React.useEffect(() => {
         PlayerGameData.Get().onDataChanged(() => {
-            setPlayers(PlayerGameData.Get().players);
+            //console.log("player data changed changed", PlayerGameData.Get().players);
+            setPlayers([...PlayerGameData.Get().players]);
         })
     }, [setPlayers]);
     
@@ -105,8 +108,8 @@ function PlayerLobby(props: LobbyProps) {
         <div>
             <div>Players: </div>
             {
-                PlayerGameData.Get().players.map(p => <div>
-                    {p.name}:
+                players.map(p => <div key={p.playerId}>
+                    {p.name}: 
                     {p.playerId}
                     {p === PlayerGameData.Get().you ? "(You)" : null}
                 </div>)

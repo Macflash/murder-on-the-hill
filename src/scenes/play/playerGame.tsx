@@ -9,6 +9,8 @@ import { PlayerGameData } from '../../rtc/PlayerGameData';
 import { HandlePlayerKeys } from './HandlePlayerKeys';
 import { Coord } from '../../game/coordinates/Coord';
 import { Index } from '../../game/tiles/Floor';
+import { ApplyFriction, CollideWithWalls, MoveItems } from '../../game/items/Collision';
+import { PlayerUpdateEvent } from '../../rtc/events/playerEvents';
 
 const center: Coord = { x: 0, y: 0 };
 
@@ -61,7 +63,9 @@ export function PlayerGame() {
           }}>Recenter Map</button>
         </div> : null}
 
-      <GridPlayer player={player} center={center} />
+      {PlayerGameData.Get().players.map(p =>
+        <GridPlayer key={p.playerId} player={p} center={center} />
+      )}
 
       <canvas id="Canvas_SightResult"
         width={window.innerWidth}
@@ -90,10 +94,19 @@ export function PlayerGame() {
 
 function animate() {
   const player = PlayerGameData.Get().you;
-  const { showMap } = HandlePlayerKeys(player, center);
+  const { showMap, changed } = HandlePlayerKeys(player, center);
   if (!showMap) {
     center.x = player.position.x;
     center.y = player.position.y;
+  }
+
+  MoveItems(PlayerGameData.Get().players);
+  CollideWithWalls(player, PlayerGameData.Get().yourFloor, true);
+  ApplyFriction(PlayerGameData.Get().players);
+
+  if (changed || player.velocity.x !== 0 || player.velocity.y !== 0) {
+    //console.log("sending!", player);
+    PlayerGameData.Get().connection.sendToHost(PlayerUpdateEvent(player));
   }
 
   DoSightLineThing(player, PlayerGameData.Get().yourFloor, center);

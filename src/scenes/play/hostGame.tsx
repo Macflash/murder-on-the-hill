@@ -2,7 +2,7 @@ import React from 'react';
 import { GridTile } from '../../game/tiles/GridTile';
 import { ApplyFriction, CollideItems, CollideWithWalls, GetItemsInInteractionDistance, GetTileCoord, MoveItems } from '../../game/items/Collision';
 import { Index } from '../../game/tiles/Floor';
-import { GridPlayer, player } from '../../game/items/Player';
+import { GridPlayer } from '../../game/items/Player';
 import { GetItems } from '../../game/items/Items';
 import { Interactions, SetInteractables } from '../../game/hud/Hud_Interaction';
 import { Inventory } from '../../game/hud/Inventory';
@@ -10,10 +10,11 @@ import { DoSightLineThing } from '../../game/tiles/Rooms';
 import { HudStats } from '../../game/hud/Hud_Stats';
 import { GetMonsters } from '../../game/items/Monsters';
 import { HostGameData } from '../../rtc/HostGameData';
+import { HandlePlayerKeys } from './HandlePlayerKeys';
+import { Coord } from '../../game/coordinates/Coord';
+import { PlayerUpdateEvent } from '../../rtc/events/playerEvents';
 
-
-export let centerX = 0;
-export let centerY = 0;
+export let center: Coord = { x: 0, y: 0 };
 
 export var RenderApp = () => { };
 var showMap = false;
@@ -29,7 +30,9 @@ const canvasStyle: React.CSSProperties = {
   left: 0,
 };
 
-export function HostGame(props: {isHost: boolean}) {
+let startOnce = true;
+
+export function HostGame(props: { isHost: boolean }) {
   const [, setState] = React.useState(0);
   const rerender = React.useCallback(() => {
     setState(Math.random());
@@ -39,25 +42,33 @@ export function HostGame(props: {isHost: boolean}) {
 
   // start animating
   React.useEffect(() => {
+    if (startOnce) {
+      animate();
+      // SLOW STUFF
+      setInterval(() => {
+        // SLOW STUFF
+        //HostGameData.Get().connection.sendToAllPlayers(PlayerUpdateEvent(player));
+        GetMonsters().forEach(monster => monster.decide_move(HostGameData.Get().players));
+      }, 250);
+    }
+    startOnce = false;
     // every frame things
-    animate();
 
-    // SLOW STUFF
-    setInterval(() => {
-      GetMonsters().forEach(monster => monster.decide_move([player]));
-    }, 1000);
   }, []);
 
-  const center = { x: centerX, y: centerY };
+  const player = HostGameData.Get().you;
+
   return (
     <div className="App" style={{ overflow: "hidden" }}>
       {showMap ?
         <div style={{ zIndex: 100, bottom: 0, padding: 20, position: "absolute", left: 0, right: 0 }}>
           <div style={{ color: "white" }}>Map</div>
-          <button onClick={() => { centerX = 0; centerY = 0; rerender(); }}>Recenter Map</button>
+          <button onClick={() => { center.x = 0; center.y = 0; rerender(); }}>Recenter Map</button>
         </div> : null}
 
-      <GridPlayer center={center} player={player} />
+      {HostGameData.Get().players.map(p =>
+        <GridPlayer key={p.playerId} player={p} center={center} />
+      )}
 
       <canvas id="Canvas_SightResult"
         width={window.innerWidth}
@@ -83,94 +94,15 @@ export function HostGame(props: {isHost: boolean}) {
     </div>
   );
 }
-let leftPressed = false;
-let upPressed = false;
-let rightPressed = false;
-let downPressed = false;
-let mPressed = false;
-document.addEventListener('keydown', e => {
-  if (e.key === "m" || e.key === "M") {
-    if (!mPressed) { showMap = !showMap; }
-    mPressed = true;
-  }
 
-  if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
-    leftPressed = true;
-    rightPressed = false;
-  }
-  if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
-    rightPressed = true;
-    leftPressed = false;
-  }
-  if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") {
-    upPressed = true;
-    downPressed = false;
-  }
-  if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") {
-    downPressed = true;
-    upPressed = false;
-  }
-});
-document.addEventListener('keyup', e => {
-  //console.log(e.key);
-  if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
-    leftPressed = false;
-  }
-  if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
-    rightPressed = false;
-  }
-  if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") {
-    upPressed = false;
-  }
-  if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") {
-    downPressed = false;
-  }
-  if (e.key === "m" || e.key === "M") {
-    mPressed = false;
-  }
-});
-const moveSpeed = 2;
-const playerAccel = .3;
-const mapSpeed = 7;
 function animate() {
-  if (showMap) {
-    if (leftPressed) {
-      centerX -= mapSpeed;
-    }
-    if (rightPressed) {
-      centerX += mapSpeed;
-    }
-    if (upPressed) {
-      centerY -= mapSpeed;
-    }
-    if (downPressed) {
-      centerY += mapSpeed;
-    }
-  }
-  else {
-    player.velocity = player.velocity || { x: 0, y: 0 };
-    if (leftPressed && player.velocity.x > -moveSpeed) {
-      //player.position.x -= moveSpeed;
-      player.velocity.x -= playerAccel;
-      player.imageTransform = undefined;
-    }
-    if (rightPressed && player.velocity.x < moveSpeed) {
-      //player.position.x += moveSpeed;
-      player.velocity.x += playerAccel;
-      player.imageTransform = "scale(-1,1)";
-    }
-    if (upPressed && player.velocity.y > -moveSpeed) {
-      //player.position.y -= moveSpeed;
-      player.velocity.y -= playerAccel;
-    }
-    if (downPressed && player.velocity.y < moveSpeed) {
-      //player.position.y += moveSpeed;
-      player.velocity.y += playerAccel;
-    }
-  }
-
+  const player = HostGameData.Get().you;
+  const { showMap, changed } = HandlePlayerKeys(player, center);
+  
   MoveItems([player, ...GetMonsters()]);
+
   CollideWithWalls(player, HostGameData.Get().yourFloor, true);
+
   GetItems().filter(item => item.moveable && item.blockObjects).forEach(item => CollideWithWalls(item, HostGameData.Get().yourFloor));
 
   GetMonsters().forEach(monster => {
@@ -183,6 +115,14 @@ function animate() {
   });
 
   ApplyFriction([player]);
+
+  if (changed || player.velocity.x !== 0 || player.velocity.y !== 0) {
+    //console.log("sending player update");
+    HostGameData.Get().connection.sendToAllPlayers(PlayerUpdateEvent(player));
+  }
+  
+  // this breaks... everything
+  //HostGameData.Get().connection.sendToAllPlayers(PlayerUpdateEvent(player));
 
   // TODO: don't check for interaction distance EVERY frame, this is totaly overkill
   // BRO DO we really need ROOM items vs NORMAL items??
@@ -206,11 +146,9 @@ function animate() {
 
   // FOLLOW CAM
   if (!showMap) {
-    centerX = player.position.x;
-    centerY = player.position.y;
+    center.x = player.position.x;
+    center.y = player.position.y;
   }
-
-  const center = { x: centerX, y: centerY };
 
   DoSightLineThing(player, HostGameData.Get().yourFloor, center);
   //  DrawAllRooms(FirstFloor);

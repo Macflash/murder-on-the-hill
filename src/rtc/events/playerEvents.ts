@@ -13,3 +13,16 @@ export function PlayerAddedEvent(player: Player): string {
     };
     return JSON.stringify(message);
 }
+
+export interface PlayerUpdateEvent extends RtcEvent {
+    type: "UpdatePlayer",
+    player: Player,
+}
+
+export function PlayerUpdateEvent(player: Player): string {
+    const message: PlayerUpdateEvent = {
+        type: "UpdatePlayer",
+        player
+    };
+    return JSON.stringify(message);
+}

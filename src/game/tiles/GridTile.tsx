@@ -64,7 +64,8 @@ export const GridTile: React.FC<{ tile: Tile; floor: Floor; overlayMode: boolean
       opened={tile.hasNeighbor(floor, d)}
     />)}
   </div>
-    {tile.info.items?.filter(item => !item.hidden).map(item => <GridItem
+    {tile.info.items?.filter(item => !item.hidden).map((item, i) => <GridItem
+      key={i}
       item={item}
       center={center}
     />)}

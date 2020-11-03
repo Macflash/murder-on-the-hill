@@ -49,9 +49,9 @@ export class HostConnection {
                         // existing player
                         const peer = new Peer({ trickle: false, });
                         console.log("New player!", playerId, peer);
-                        peer.on('readable', () => {
-                            console.log("READABLE!");
-                        })
+                        //peer.on('readable', () => {
+                            //console.log("READABLE!");
+                        //})
                         // set up the event handler for our peer connection 
                         // to send signal data to the other player
                         peer.on('signal', data => {
@@ -67,7 +67,7 @@ export class HostConnection {
                         });
 
                         peer.on('data', data => {
-                            alert("data from player!");
+                            //alert("data from player!");
                             this.onPlayerData(playerId, data?.toString());
                         });
 
@@ -92,9 +92,7 @@ export class HostConnection {
     }
 
     sendToAllPlayers(data: any) {
-        console.log("sending to ", this.players);
         this.players.forEach(peer => {
-            console.log(peer);
             peer.send(data);
         });
     }

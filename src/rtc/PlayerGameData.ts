@@ -2,8 +2,7 @@ import { RtcEvent, StartGameEvent } from "./events/rtcEvents";
 import { PlayerConnection } from "./player_api";
 import { BaseGameData } from "./gameData";
 import { TileAddedEvent } from "./events/tileEvents";
-import { Floor } from "../game/tiles/Floor";
-import { PlayerAddedEvent } from "./events/playerEvents";
+import { PlayerAddedEvent, PlayerUpdateEvent } from "./events/playerEvents";
 
 // Handles the game state for a remote player.
 export class PlayerGameData extends BaseGameData {
@@ -63,6 +62,12 @@ export class PlayerGameData extends BaseGameData {
                 const { player } = playerData;
                 console.log("got a new player from host", player);
                 super.AddPlayer(player);
+                break;
+            case "UpdatePlayer":
+                const playerUpdateData = hostData as PlayerUpdateEvent;
+                const { player: playerUpdate } = playerUpdateData;
+                //console.log("got a new player from host", playerUpdate);
+                super.UpdatePlayer(playerUpdate);
                 break;
             case "AddTile":
                 const tileData = hostData as TileAddedEvent;

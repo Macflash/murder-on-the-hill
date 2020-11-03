@@ -1,10 +1,9 @@
 import { Add, Coord, MoveCoord, Multiply } from '../coordinates/Coord';
 import { Direction, AllDirections, Opposite } from '../coordinates/Direction';
 import { Tile } from './Tile';
-import { Entrance, TileLibrary } from './Rooms';
+import { TileLibrary } from './Rooms';
 import { tileSize } from './Size';
 import { AddItem } from '../items/Items';
-import { BasicMonster } from '../items/Monsters';
 
 export function IndexCoord(c: Coord) { return Index(c.x, c.y); }
 export function Index(x: number, y: number) { return `${x}, ${y}`; }
@@ -29,12 +28,9 @@ export class Floor {
 
   setCoord(tile: Tile, c: Coord) { this.setTile(tile, c.x, c.y); }
   setTile(tile: Tile, x: number, y: number) {
-    if (this.hasTile(x, y)) {
-      throw new Error(`Tried placing a tile where there already was one! ${x}. ${y}: ${tile.info.name}, existing tile was ${this.getTile(x, y)?.info.name}`);
-    }
-
     tile.x = x;
     tile.y = y;
+    tile.floor = this.number;
 
     const tileCenter = Multiply(Add(tile.coord, { x: 0, y: 0 }), tileSize);
     tile.info.items = tile.info.items?.filter(item => {
@@ -52,7 +48,7 @@ export class Floor {
   }
 
   get tiles(): Tile[] {
-    return Array.from(this.grid, ([key, tile]) => tile);
+    return Array.from(this.grid, ([, tile]) => tile);
   }
 
   // return all POSSIBLE playing places
@@ -62,8 +58,12 @@ export class Floor {
 
   fillCoord(c: Coord) { this.fillTile(c.x, c.y); }
   fillTile(x: number, y: number) {
+    if (this.hasTile(x, y)) {
+      throw new Error(`Tried filling a tile where there already was one! ${x},${y}`);
+    }
+
     // 1. get all tiles bordering this.
-    const neighbors = AllDirections().map(d => this.getCoord(MoveCoord({ x, y }, d)));
+    //const neighbors = AllDirections().map(d => this.getCoord(MoveCoord({ x, y }, d)));
     const neededDoors = new Set<Direction>();
     const neededWalls = new Set<Direction>();
 
